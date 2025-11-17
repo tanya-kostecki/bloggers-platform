@@ -1,8 +1,3 @@
-/*title: string;
-  shortDescription: string;
-  content: string;
-  blogId: string;*/
-
 import { body } from 'express-validator';
 
 const titleValidation = body('title')
@@ -35,3 +30,10 @@ const contentValidation = body('content')
 const blogIdValidation = body('blogId')
   .isInt({ gt: 0 })
   .withMessage('ID must be a number');
+
+export const postInputValidationMiddleware = [
+  titleValidation,
+  shortDescriptionValidation,
+  contentValidation,
+  blogIdValidation,
+];

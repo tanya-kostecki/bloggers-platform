@@ -15,8 +15,6 @@ describe('Blogs API', () => {
 
   const adminToken = generateAuthToken();
 
-  const validBlog = getBlogDto();
-
   beforeAll(async () => {
     await clearDatabase(app);
   });
