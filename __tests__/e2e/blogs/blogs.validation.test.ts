@@ -93,4 +93,14 @@ describe('Blogs API Validation', () => {
     const response = await request(app).delete(`${BLOGS_PATH}/${blog.body.id}`);
     expect(response.status).toBe(HttpStatus.Unauthorized);
   });
+
+  it('❌ should not delete a blog with non-existent id', async () => {
+    const blog = await createBlog(app);
+    const response = await request(app)
+      .delete(`${BLOGS_PATH}/9999`)
+      .set('Authorization', adminToken);
+    expect(response.status).toBe(HttpStatus.NotFound);
+  });
 });
+
+/*PUT, DELETE, GET -> "/blogs/:id": should return error if :id from uri param not found; status 404;*/
