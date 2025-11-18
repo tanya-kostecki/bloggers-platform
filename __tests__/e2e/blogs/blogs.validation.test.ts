@@ -49,12 +49,25 @@ describe('Blogs API Validation', () => {
     expect(responseTwo.body.errorsMessages).toHaveLength(2);
   });
 
-  it('❌ should not update post without auth token', async () => {
+  it('❌ should not update blog without auth token', async () => {
     const blog = await createBlog(app);
     const response = await request(app)
       .put(`${BLOGS_PATH}/${blog.body.id}`)
       .send(validBlog);
     expect(response.status).toBe(HttpStatus.Unauthorized);
+  });
+
+  it('❌ should not update a blog with nonexistent id', async () => {
+    const response = await request(app)
+      .put(`${BLOGS_PATH}/23456`)
+      .set('Authorization', adminToken)
+      .send({
+        name: 'Hello World',
+        description: 'A blog about web development',
+        websiteUrl: 'https://developer.com',
+      });
+
+    expect(response.status).toBe(HttpStatus.NotFound);
   });
 
   it('❌ should not update a blog by id with incorrect data', async () => {

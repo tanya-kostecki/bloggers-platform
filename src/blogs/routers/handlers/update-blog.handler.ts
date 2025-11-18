@@ -12,7 +12,7 @@ export const updateBlogHandler = (
 
   if (!targetBlock) {
     return res
-      .status(HttpStatus.NoContent)
+      .status(HttpStatus.NotFound)
       .send(createErrorMessages([{ field: 'id', message: 'Blog not found' }]));
   }
 
