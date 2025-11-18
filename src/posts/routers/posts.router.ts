@@ -4,10 +4,10 @@ import { paramIdValidationMiddleware } from '../../core/validation/param-id-vali
 import { inputResultValidationMiddleware } from '../../core/validation/input-result.validation-middleware';
 import { getOnePostHandler } from './handlers/get-one-post.handler';
 import { adminGuardMiddleware } from '../../auth/middlewares/admin.duard-middleware';
-import { createBlogHandler } from '../../blogs/routers/handlers/create-blog.handler';
 import { updatePostHandler } from './handlers/update-post.handler';
 import { postInputValidationMiddleware } from '../validation/post-input.validation-middleware';
 import { deletePostHandler } from './handlers/delete-post.handler';
+import { createPostHandler } from './handlers/create-post.handler';
 
 export const postsRouter = Router({});
 
@@ -24,7 +24,7 @@ postsRouter
     adminGuardMiddleware,
     postInputValidationMiddleware,
     inputResultValidationMiddleware,
-    createBlogHandler,
+    createPostHandler,
   )
   .put(
     '/:id',

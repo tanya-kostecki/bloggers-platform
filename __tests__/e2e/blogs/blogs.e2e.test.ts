@@ -25,15 +25,15 @@ describe('Blogs API', () => {
       name: 'Backend',
       description: 'A very short description of the blog',
     };
-    const response = await createBlog(app, adminToken, newBlog);
+    const response = await createBlog(app, newBlog);
 
     expect(response.status).toBe(HttpStatus.Created);
     expect(response.body).toHaveProperty('name');
   });
 
   it('should return all the blogs; GET /api/blogs', async () => {
-    await createBlog(app, adminToken);
-    await createBlog(app, adminToken);
+    await createBlog(app);
+    await createBlog(app);
 
     const response = await request(app).get(BLOGS_PATH);
 
@@ -43,7 +43,7 @@ describe('Blogs API', () => {
   });
 
   it('should return a block by id', async () => {
-    const blog = await createBlog(app, adminToken);
+    const blog = await createBlog(app);
     const response = await request(app).get(`${BLOGS_PATH}/${blog.body.id}`);
 
     expect(response.status).toBe(HttpStatus.Ok);
@@ -51,7 +51,7 @@ describe('Blogs API', () => {
   });
 
   it('should update a blog by id', async () => {
-    const blog = await createBlog(app, adminToken);
+    const blog = await createBlog(app);
 
     const response = await request(app)
       .put(`${BLOGS_PATH}/${blog.body.id}`)
@@ -72,7 +72,7 @@ describe('Blogs API', () => {
   });
 
   it('should delete a blog by id', async () => {
-    const blog = await createBlog(app, adminToken);
+    const blog = await createBlog(app);
 
     const response = await request(app)
       .delete(`${BLOGS_PATH}/${blog.body.id}`)

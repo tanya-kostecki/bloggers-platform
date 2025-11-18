@@ -3,11 +3,11 @@ import { setupApp } from '../../../src/setup-app';
 import { generateAuthToken } from '../../utils/generate-auth-token';
 import { clearDatabase } from '../../utils/clearDatabase';
 import request from 'supertest';
-import { BLOGS_PATH } from '../../../src/core/paths/paths';
+import { POSTS_PATH } from '../../../src/core/paths/paths';
 import { HttpStatus } from '../../../src/core/types/http-statuses';
-import { createBlog } from '../../utils/blogs/create-blog';
+import { createPost } from '../../utils/posts/create-post';
 
-describe('Blogs API Validation', () => {
+describe('Posts API Validation', () => {
   const app = express();
   setupApp(app);
 
@@ -19,57 +19,62 @@ describe('Blogs API Validation', () => {
 
   it('❌ should not create a blog with invalid data; POST /api/blogs', async () => {
     const invalidDataOne = {
-      name: '',
-      description: '',
-      websiteUrl: '',
+      title: '',
+      shortDescription: '',
+      content: '',
+      blogId: '',
     };
 
     const invalidDataTwo = {
-      name: 'a'.repeat(50),
-      description: 'b'.repeat(501),
-      websiteUrl: 'https://example.com/',
+      title: 'a'.repeat(51),
+      shortDescription: 'b'.repeat(101),
+      content: 'c'.repeat(1001),
+      blogId: '345',
     };
 
-    const responseOne = await createBlog(app, invalidDataOne);
-    const responseTwo = await createBlog(app, invalidDataTwo);
+    const responseOne = await createPost(app, invalidDataOne);
+    const responseTwo = await createPost(app, invalidDataTwo);
 
     expect(responseOne.status).toBe(HttpStatus.BadRequest);
     expect(responseOne.body).toHaveProperty('errorsMessages');
-    expect(responseOne.body.errorsMessages).toHaveLength(3);
+    expect(responseOne.body.errorsMessages).toHaveLength(4);
 
     expect(responseTwo.status).toBe(HttpStatus.BadRequest);
     expect(responseTwo.body).toHaveProperty('errorsMessages');
-    expect(responseTwo.body.errorsMessages).toHaveLength(2);
+    expect(responseTwo.body.errorsMessages).toHaveLength(4);
   });
 
-  it('❌ should not update a blog by id with incorrect data', async () => {
-    const blog = await createBlog(app);
+  it('❌ should not update a post  with incorrect data', async () => {
+    const post = await createPost(app);
+
     const invalidDataOne = {
-      name: '',
-      description: '',
-      websiteUrl: '',
+      title: '',
+      shortDescription: '',
+      content: '',
+      blogId: '',
     };
+
     const invalidDataTwo = {
-      name: 'Hello Backend',
-      description: 'A blog about backend development',
+      title: 'Hello Backend',
+      shortDescription: 'A blog about backend development',
     };
 
     const responseOne = await request(app)
-      .put(`${BLOGS_PATH}/${blog.body.id}`)
+      .put(`${POSTS_PATH}/${post.body.id}`)
       .set('Authorization', adminToken)
       .send(invalidDataOne);
 
     const responseTwo = await request(app)
-      .put(`${BLOGS_PATH}/${blog.body.id}`)
+      .put(`${POSTS_PATH}/${post.body.id}`)
       .set('Authorization', adminToken)
       .send(invalidDataTwo);
 
     expect(responseOne.status).toBe(HttpStatus.BadRequest);
     expect(responseOne.body).toHaveProperty('errorsMessages');
-    expect(responseOne.body.errorsMessages).toHaveLength(3);
+    expect(responseOne.body.errorsMessages).toHaveLength(4);
 
     expect(responseTwo.status).toBe(HttpStatus.BadRequest);
     expect(responseTwo.body).toHaveProperty('errorsMessages');
-    expect(responseTwo.body.errorsMessages).toHaveLength(1);
+    expect(responseTwo.body.errorsMessages).toHaveLength(2);
   });
 });

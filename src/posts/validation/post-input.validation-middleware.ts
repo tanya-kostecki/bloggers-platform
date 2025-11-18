@@ -1,4 +1,5 @@
 import { body } from 'express-validator';
+import { blogsRepository } from '../../blogs/repositories/blogs.repository';
 
 const titleValidation = body('title')
   .isString()
@@ -28,8 +29,18 @@ const contentValidation = body('content')
   .withMessage('Content should not be longer than 1000 characters');
 
 const blogIdValidation = body('blogId')
-  .isInt({ gt: 0 })
-  .withMessage('ID must be a number');
+  .isString()
+  .withMessage('blogId should be a string')
+  .trim()
+  .notEmpty()
+  .withMessage('blogId is required')
+  .custom((value) => {
+    const blog = blogsRepository.findOne(value);
+    if (!blog) {
+      throw new Error('Blog with this id does not exists');
+    }
+    return true;
+  });
 
 export const postInputValidationMiddleware = [
   titleValidation,
