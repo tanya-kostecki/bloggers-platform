@@ -8,6 +8,7 @@ module.exports = {
   transform: {
     ...tsJestTransformCfg,
   },
+  testMatch: ['**/__tests__/**/*.test.ts', '**/__tests__/**/*.spec.ts'],
   testPathIgnorePatterns: ['/node_modules/', '/dist/'],
   setupFiles: ['<rootDir>/jest.setup.js'],
 };

@@ -17,7 +17,14 @@ describe('Posts API Validation', () => {
     await clearDatabase(app);
   });
 
-  it('❌ should not create a blog with invalid data; POST /api/blogs', async () => {
+  it('❌ should not create post without auth token', async () => {
+    const response = await request(app)
+      .post(POSTS_PATH)
+      .send({ message: 'hacker' });
+    expect(response.status).toBe(HttpStatus.Unauthorized);
+  });
+
+  it('❌ should not create a post with invalid data; POST /api/blogs', async () => {
     const invalidDataOne = {
       title: '',
       shortDescription: '',
@@ -44,7 +51,7 @@ describe('Posts API Validation', () => {
     expect(responseTwo.body.errorsMessages).toHaveLength(4);
   });
 
-  it('❌ should not update a post  with incorrect data', async () => {
+  it('❌ should not update a post with incorrect data and without token', async () => {
     const post = await createPost(app);
 
     const invalidDataOne = {
@@ -69,6 +76,10 @@ describe('Posts API Validation', () => {
       .set('Authorization', adminToken)
       .send(invalidDataTwo);
 
+    const responseThree = await request(app)
+      .put(`${POSTS_PATH}/${post.body.id}`)
+      .send(invalidDataTwo);
+
     expect(responseOne.status).toBe(HttpStatus.BadRequest);
     expect(responseOne.body).toHaveProperty('errorsMessages');
     expect(responseOne.body.errorsMessages).toHaveLength(4);
@@ -76,5 +87,13 @@ describe('Posts API Validation', () => {
     expect(responseTwo.status).toBe(HttpStatus.BadRequest);
     expect(responseTwo.body).toHaveProperty('errorsMessages');
     expect(responseTwo.body.errorsMessages).toHaveLength(2);
+
+    expect(responseThree.status).toBe(HttpStatus.Unauthorized);
+  });
+
+  it('❌ should not delete a blog without auth token', async () => {
+    const post = await createPost(app);
+    const response = await request(app).delete(`${POSTS_PATH}/${post.body.id}`);
+    expect(response.status).toBe(HttpStatus.Unauthorized);
   });
 });

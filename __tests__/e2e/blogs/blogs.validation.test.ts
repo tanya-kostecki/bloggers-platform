@@ -6,15 +6,22 @@ import request from 'supertest';
 import { BLOGS_PATH } from '../../../src/core/paths/paths';
 import { HttpStatus } from '../../../src/core/types/http-statuses';
 import { createBlog } from '../../utils/blogs/create-blog';
+import { getBlogDto } from '../../utils/blogs/get.blog-dto';
 
 describe('Blogs API Validation', () => {
   const app = express();
   setupApp(app);
 
   const adminToken = generateAuthToken();
+  const validBlog = getBlogDto();
 
   beforeAll(async () => {
     await clearDatabase(app);
+  });
+
+  it('❌ should not create post without auth token', async () => {
+    const response = await request(app).post(BLOGS_PATH).send(validBlog);
+    expect(response.status).toBe(HttpStatus.Unauthorized);
   });
 
   it('❌ should not create a blog with invalid data; POST /api/blogs', async () => {
@@ -40,6 +47,14 @@ describe('Blogs API Validation', () => {
     expect(responseTwo.status).toBe(HttpStatus.BadRequest);
     expect(responseTwo.body).toHaveProperty('errorsMessages');
     expect(responseTwo.body.errorsMessages).toHaveLength(2);
+  });
+
+  it('❌ should not update post without auth token', async () => {
+    const blog = await createBlog(app);
+    const response = await request(app)
+      .put(`${BLOGS_PATH}/${blog.body.id}`)
+      .send(validBlog);
+    expect(response.status).toBe(HttpStatus.Unauthorized);
   });
 
   it('❌ should not update a blog by id with incorrect data', async () => {
@@ -71,5 +86,11 @@ describe('Blogs API Validation', () => {
     expect(responseTwo.status).toBe(HttpStatus.BadRequest);
     expect(responseTwo.body).toHaveProperty('errorsMessages');
     expect(responseTwo.body.errorsMessages).toHaveLength(1);
+  });
+
+  it('❌ should not delete a blog without auth token', async () => {
+    const blog = await createBlog(app);
+    const response = await request(app).delete(`${BLOGS_PATH}/${blog.body.id}`);
+    expect(response.status).toBe(HttpStatus.Unauthorized);
   });
 });
