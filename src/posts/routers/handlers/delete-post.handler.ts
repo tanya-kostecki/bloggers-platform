@@ -3,17 +3,24 @@ import { postsRepository } from '../../repositories/posts.repository';
 import { HttpStatus } from '../../../core/types/http-statuses';
 import { createErrorMessages } from '../../../core/utils/createErrorMessages';
 
-export const deletePostHandler = (
+export const deletePostHandler = async (
   req: Request<{ id: string }>,
   res: Response,
 ) => {
-  const postToDelete = postsRepository.findOne(req.params.id);
-  if (!postToDelete) {
-    return res
-      .status(HttpStatus.NotFound)
-      .send(createErrorMessages([{ field: 'id', message: 'Post not found' }]));
-  }
+  try {
+    const postToDelete = await postsRepository.findOne(req.params.id);
+    if (!postToDelete) {
+      res
+        .status(HttpStatus.NotFound)
+        .send(
+          createErrorMessages([{ field: 'id', message: 'Post not found' }]),
+        );
+      return;
+    }
 
-  postsRepository.delete(postToDelete.id);
-  return res.sendStatus(HttpStatus.NoContent);
+    await postsRepository.delete(req.params.id);
+    res.sendStatus(HttpStatus.NoContent);
+  } catch {
+    res.sendStatus(HttpStatus.InternalServerError);
+  }
 };

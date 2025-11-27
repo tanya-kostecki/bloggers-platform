@@ -7,12 +7,20 @@ export const getOnePostHandler = async (
   req: Request<{ id: string }>,
   res: Response,
 ) => {
-  const post = postsRepository.findOne(req.params.id);
-  if (!post) {
-    return res
-      .status(HttpStatus.NotFound)
-      .send(createErrorMessages([{ field: 'id', message: 'Post not found.' }]));
-  }
+  try {
+    const post = await postsRepository.findOne(req.params.id);
 
-  return res.status(HttpStatus.Ok).send(post);
+    if (!post) {
+      res
+        .status(HttpStatus.NotFound)
+        .send(
+          createErrorMessages([{ field: 'id', message: 'Post not found.' }]),
+        );
+      return;
+    }
+
+    res.status(HttpStatus.Ok).send(post);
+  } catch {
+    res.sendStatus(HttpStatus.InternalServerError);
+  }
 };

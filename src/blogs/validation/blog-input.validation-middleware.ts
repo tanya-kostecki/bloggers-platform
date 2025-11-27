@@ -25,7 +25,7 @@ const websiteUrlValidation = body('websiteUrl')
   .notEmpty()
   .withMessage('Website URL is required')
   .isLength({ max: 100 })
-  .withMessage('Website should not be longer than 500 characters')
+  .withMessage('Website should not be longer than 100 characters')
   .custom(
     (value) =>
       !!value.match(

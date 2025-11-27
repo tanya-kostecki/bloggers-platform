@@ -1,12 +1,17 @@
 import express from 'express';
 import { setupApp } from '../../../src/setup-app';
+// @ts-ignore
 import { generateAuthToken } from '../../utils/generate-auth-token';
+// @ts-ignore
 import { clearDatabase } from '../../utils/clearDatabase';
 import request from 'supertest';
 import { BLOGS_PATH } from '../../../src/core/paths/paths';
 import { HttpStatus } from '../../../src/core/types/http-statuses';
+// @ts-ignore
 import { createBlog } from '../../utils/blogs/create-blog';
 import { getBlogDto } from '../../utils/blogs/get.blog-dto';
+import { runDB, stopDB } from '../../../src/db/mongo.db';
+import { SETTINGS } from '../../../src/core/settings/settings';
 
 describe('Blogs API Validation', () => {
   const app = express();
@@ -16,7 +21,12 @@ describe('Blogs API Validation', () => {
   const validBlog = getBlogDto();
 
   beforeAll(async () => {
+    await runDB(SETTINGS.MONGO_URL);
     await clearDatabase(app);
+  });
+
+  afterAll(async () => {
+    await stopDB();
   });
 
   it('❌ should not create post without auth token', async () => {
@@ -59,7 +69,7 @@ describe('Blogs API Validation', () => {
 
   it('❌ should not update a blog with nonexistent id', async () => {
     const response = await request(app)
-      .put(`${BLOGS_PATH}/23456`)
+      .put(`${BLOGS_PATH}/507f1f77bcf86cd799439011`)
       .set('Authorization', adminToken)
       .send({
         name: 'Hello World',
@@ -108,12 +118,9 @@ describe('Blogs API Validation', () => {
   });
 
   it('❌ should not delete a blog with non-existent id', async () => {
-    const blog = await createBlog(app);
     const response = await request(app)
-      .delete(`${BLOGS_PATH}/9999`)
+      .delete(`${BLOGS_PATH}/507f1f77bcf86cd799439011`)
       .set('Authorization', adminToken);
     expect(response.status).toBe(HttpStatus.NotFound);
   });
 });
-
-/*PUT, DELETE, GET -> "/blogs/:id": should return error if :id from uri param not found; status 404;*/

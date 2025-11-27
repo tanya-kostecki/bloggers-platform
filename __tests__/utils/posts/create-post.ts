@@ -1,6 +1,8 @@
 import { Express } from 'express';
+// @ts-ignore
 import { createBlog } from '../blogs/create-blog';
 import { generateAuthToken } from '../generate-auth-token';
+// @ts-ignore
 import { getPostDto } from './get-post-dto';
 import request from 'supertest';
 import { POSTS_PATH } from '../../../src/core/paths/paths';

@@ -34,8 +34,10 @@ const blogIdValidation = body('blogId')
   .trim()
   .notEmpty()
   .withMessage('blogId is required')
-  .custom((value) => {
-    const blog = blogsRepository.findOne(value);
+  .isMongoId()
+  .withMessage('blogId must be a valid MongoDb ObjectId')
+  .custom(async (value) => {
+    const blog = await blogsRepository.findOne(value);
     if (!blog) {
       throw new Error('Blog with this id does not exists');
     }

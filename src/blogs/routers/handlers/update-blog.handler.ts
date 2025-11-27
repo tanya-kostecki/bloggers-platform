@@ -4,18 +4,25 @@ import { blogsRepository } from '../../repositories/blogs.repository';
 import { BlogInputModel } from '../../dto/blog-input-model';
 import { createErrorMessages } from '../../../core/utils/createErrorMessages';
 
-export const updateBlogHandler = (
+export const updateBlogHandler = async (
   req: Request<{ id: string }, {}, BlogInputModel>,
   res: Response,
 ) => {
-  const targetBlock = blogsRepository.findOne(req.params.id);
+  try {
+    const targetBlog = await blogsRepository.findOne(req.params.id);
 
-  if (!targetBlock) {
-    return res
-      .status(HttpStatus.NotFound)
-      .send(createErrorMessages([{ field: 'id', message: 'Blog not found' }]));
+    if (!targetBlog) {
+      res
+        .status(HttpStatus.NotFound)
+        .send(
+          createErrorMessages([{ field: 'id', message: 'Blog not found' }]),
+        );
+      return;
+    }
+
+    await blogsRepository.update(req.params.id, req.body);
+    res.sendStatus(HttpStatus.NoContent);
+  } catch {
+    res.sendStatus(HttpStatus.InternalServerError);
   }
-
-  blogsRepository.update(targetBlock.id, req.body);
-  res.sendStatus(HttpStatus.NoContent);
 };

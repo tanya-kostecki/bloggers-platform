@@ -1,13 +1,19 @@
 import express from 'express';
 import { setupApp } from '../../../src/setup-app';
+// @ts-ignore
 import { generateAuthToken } from '../../utils/generate-auth-token';
+// @ts-ignore
 import { clearDatabase } from '../../utils/clearDatabase';
+// @ts-ignore
 import { getBlogDto } from '../../utils/blogs/get.blog-dto';
 import request from 'supertest';
 import { BLOGS_PATH } from '../../../src/core/paths/paths';
 import { HttpStatus } from '../../../src/core/types/http-statuses';
 import { BlogInputModel } from '../../../src/blogs/dto/blog-input-model';
+// @ts-ignore
 import { createBlog } from '../../utils/blogs/create-blog';
+import { runDB, stopDB } from '../../../src/db/mongo.db';
+import { SETTINGS } from '../../../src/core/settings/settings';
 
 describe('Blogs API', () => {
   const app = express();
@@ -16,7 +22,12 @@ describe('Blogs API', () => {
   const adminToken = generateAuthToken();
 
   beforeAll(async () => {
+    await runDB(SETTINGS.MONGO_URL);
     await clearDatabase(app);
+  });
+
+  afterAll(async () => {
+    await stopDB();
   });
 
   it('✅ should create a blog; POST /api/blogs', async () => {
@@ -42,7 +53,7 @@ describe('Blogs API', () => {
     expect(response.body.length).toBeGreaterThanOrEqual(2);
   });
 
-  it('should return a block by id', async () => {
+  it('should return a blog by id', async () => {
     const blog = await createBlog(app);
     const response = await request(app).get(`${BLOGS_PATH}/${blog.body.id}`);
 
