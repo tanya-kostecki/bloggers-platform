@@ -28,7 +28,6 @@ export const postsRepository = {
           title: dto.title,
           shortDescription: dto.shortDescription,
           content: dto.content,
-          id,
         },
       },
     );

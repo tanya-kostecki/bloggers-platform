@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { postsRepository } from '../../repositories/posts.repository';
 import { HttpStatus } from '../../../core/types/http-statuses';
 import { createErrorMessages } from '../../../core/utils/createErrorMessages';
+import { mapPostToViewModel } from '../mappers/mapt-to-post-view-model';
 
 export const getOnePostHandler = async (
   req: Request<{ id: string }>,
@@ -19,7 +20,8 @@ export const getOnePostHandler = async (
       return;
     }
 
-    res.status(HttpStatus.Ok).send(post);
+    const postViewModel = mapPostToViewModel(post);
+    res.status(HttpStatus.Ok).send(postViewModel);
   } catch {
     res.sendStatus(HttpStatus.InternalServerError);
   }
