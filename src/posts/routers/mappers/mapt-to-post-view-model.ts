@@ -4,7 +4,12 @@ import { PostViewModel } from '../../types/post-view-model';
 
 export const mapPostToViewModel = (post: WithId<Post>): PostViewModel => {
   return {
-    ...post,
     id: post._id.toString(),
+    title: post.title,
+    shortDescription: post.shortDescription,
+    content: post.content,
+    blogId: post.blogId,
+    blogName: post.blogName,
+    createdAt: post.createdAt,
   };
 };
