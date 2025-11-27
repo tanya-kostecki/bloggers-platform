@@ -53,7 +53,7 @@ describe('Blogs API', () => {
     expect(response.body.length).toBeGreaterThanOrEqual(2);
   });
 
-  it('should return a block by id', async () => {
+  it('should return a blog by id', async () => {
     const blog = await createBlog(app);
     const response = await request(app).get(`${BLOGS_PATH}/${blog.body.id}`);
 

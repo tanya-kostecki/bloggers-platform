@@ -18,7 +18,7 @@ export const postsRepository = {
     const post = await postsCollection.findOne({ _id: new ObjectId(id) });
 
     if (!post) {
-      throw new Error('Blog not found');
+      throw new Error('Post not found');
     }
 
     const updatedResult = await postsCollection.updateOne(
@@ -28,13 +28,13 @@ export const postsRepository = {
           title: dto.title,
           shortDescription: dto.shortDescription,
           content: dto.content,
-          id: id,
+          id,
         },
       },
     );
 
     if (updatedResult.modifiedCount < 1) {
-      throw new Error('Blog not found');
+      throw new Error('Post not found');
     }
 
     return;
@@ -44,7 +44,7 @@ export const postsRepository = {
       _id: new ObjectId(id),
     });
     if (deletedResult.deletedCount < 1) {
-      throw new Error('Blog not found');
+      throw new Error('Post not found');
     }
     return;
   },

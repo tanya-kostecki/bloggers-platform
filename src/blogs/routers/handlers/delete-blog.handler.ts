@@ -9,9 +9,9 @@ export const deleteBlogHandler = async (
 ) => {
   try {
     const id = req.params.id;
-    const targetBlock = await blogsRepository.findOne(id);
+    const targetBlog = await blogsRepository.findOne(id);
 
-    if (!targetBlock) {
+    if (!targetBlog) {
       res
         .status(HttpStatus.NotFound)
         .send(

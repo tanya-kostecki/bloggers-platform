@@ -9,9 +9,9 @@ export const updateBlogHandler = async (
   res: Response,
 ) => {
   try {
-    const targetBlock = await blogsRepository.findOne(req.params.id);
+    const targetBlog = await blogsRepository.findOne(req.params.id);
 
-    if (!targetBlock) {
+    if (!targetBlog) {
       res
         .status(HttpStatus.NotFound)
         .send(

@@ -3,12 +3,6 @@ import { setupApp } from './setup-app';
 import { runDB } from './db/mongo.db';
 import { SETTINGS } from './core/settings/settings';
 
-// создание приложения
-const app = express();
-setupApp(app);
-
-// порт приложения
-
 const bootstrap = async () => {
   const app = express();
   setupApp(app);

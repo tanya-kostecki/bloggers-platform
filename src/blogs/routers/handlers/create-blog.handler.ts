@@ -10,15 +10,15 @@ export const createBlogHandler = async (
   res: Response,
 ) => {
   try {
-    const newBlock: Blog = {
+    const newBlog: Blog = {
       ...req.body,
       createdAt: new Date(),
       isMembership: false,
     };
 
-    const block = await blogsRepository.create(newBlock);
-    const blockViewModel = mapToBlogViewModel(block);
-    res.status(HttpStatus.Created).send(blockViewModel);
+    const blog = await blogsRepository.create(newBlog);
+    const blogViewModel = mapToBlogViewModel(blog);
+    res.status(HttpStatus.Created).send(blogViewModel);
   } catch {
     res.sendStatus(HttpStatus.InternalServerError);
   }
