@@ -1,33 +1,45 @@
-import { db } from '../../db/in-memory.db';
 import { Blog } from '../types/blog';
 import { BlogInputModel } from '../dto/blog-input-model';
+import { ObjectId, WithId } from 'mongodb';
+import { blogsCollection } from '../../db/mongo.db';
 
 export const blogsRepository = {
-  findAll: () => {
-    return db.blogs;
+  findAll: async (): Promise<WithId<Blog>[]> => {
+    return blogsCollection.find().toArray();
   },
-  findOne: (id: string) => {
-    return db.blogs.find((blog) => blog.id === id) ?? null;
+  findOne: async (id: string): Promise<WithId<Blog> | null> => {
+    return blogsCollection.findOne({ _id: new ObjectId(id) });
   },
-  create: (blog: Blog) => {
-    db.blogs.push(blog);
-    return blog;
+  create: async (blog: Blog): Promise<WithId<Blog>> => {
+    const insertedResult = await blogsCollection.insertOne(blog);
+    return { ...blog, _id: insertedResult.insertedId };
   },
-  update: (id: string, dto: BlogInputModel) => {
-    const blog = db.blogs.find((blog) => blog.id === id);
+  update: async (id: string, dto: BlogInputModel): Promise<void> => {
+    const updatedResult = await blogsCollection.updateOne(
+      { _id: new ObjectId(id) },
+      {
+        $set: {
+          name: dto.name,
+          description: dto.description,
+          websiteUrl: dto.websiteUrl,
+        },
+      },
+    );
 
-    if (!blog) {
-      throw new Error('Blog not found');
+    if (updatedResult.modifiedCount < 1) {
+      throw new Error('Blog does not exist');
     }
 
-    blog.description = dto.description;
-    blog.name = dto.name;
-    blog.websiteUrl = dto.websiteUrl;
-
-    return true;
+    return;
   },
-  delete: (id: string) => {
-    db.blogs = db.blogs.filter((blog) => blog.id !== id);
-    return true;
+  delete: async (id: string): Promise<void> => {
+    const deletedResult = await blogsCollection.deleteOne({
+      _id: new ObjectId(id),
+    });
+
+    if (deletedResult.deletedCount < 1) {
+      throw new Error('Blog does not exist');
+    }
+    return;
   },
 };

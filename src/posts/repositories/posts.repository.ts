@@ -1,34 +1,51 @@
-import { db } from '../../db/in-memory.db';
 import { Post } from '../types/post';
 import { PostInputModel } from '../dto/post-input-model';
+import { ObjectId, WithId } from 'mongodb';
+import { postsCollection } from '../../db/mongo.db';
 
 export const postsRepository = {
-  findAll: () => {
-    return db.posts;
+  findAll: async (): Promise<WithId<Post>[]> => {
+    return postsCollection.find().toArray();
   },
-  findOne: (id: string) => {
-    return db.posts.find((blog) => blog.id === id) ?? null;
+  findOne: async (id: string): Promise<WithId<Post> | null> => {
+    return postsCollection.findOne({ _id: new ObjectId(id) });
   },
-  create: (post: Post) => {
-    db.posts.push(post);
-    return post;
+  create: async (post: Post): Promise<WithId<Post>> => {
+    const insertedResult = await postsCollection.insertOne(post);
+    return { ...post, _id: insertedResult.insertedId };
   },
-  update: (id: string, dto: PostInputModel) => {
-    const post = db.posts.find((blog) => blog.id === id);
+  update: async (id: string, dto: PostInputModel): Promise<void> => {
+    const post = await postsCollection.findOne({ _id: new ObjectId(id) });
 
     if (!post) {
       throw new Error('Blog not found');
     }
 
-    post.title = dto.title;
-    post.shortDescription = dto.shortDescription;
-    post.content = dto.content;
-    post.blogId = dto.blogId;
+    const updatedResult = await postsCollection.updateOne(
+      { _id: new ObjectId(id) },
+      {
+        $set: {
+          title: dto.title,
+          shortDescription: dto.shortDescription,
+          content: dto.content,
+          id: id,
+        },
+      },
+    );
 
-    return true;
+    if (updatedResult.modifiedCount < 1) {
+      throw new Error('Blog not found');
+    }
+
+    return;
   },
-  delete: (id: string) => {
-    db.posts = db.posts.filter((blog) => blog.id !== id);
-    return true;
+  delete: async (id: string): Promise<void> => {
+    const deletedResult = await postsCollection.deleteOne({
+      _id: new ObjectId(id),
+    });
+    if (deletedResult.deletedCount < 1) {
+      throw new Error('Blog not found');
+    }
+    return;
   },
 };

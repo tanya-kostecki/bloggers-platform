@@ -1,11 +1,16 @@
 import express from 'express';
 import { setupApp } from '../../../src/setup-app';
+// @ts-ignore
 import { generateAuthToken } from '../../utils/generate-auth-token';
+// @ts-ignore
 import { clearDatabase } from '../../utils/clearDatabase';
 import request from 'supertest';
 import { POSTS_PATH } from '../../../src/core/paths/paths';
 import { HttpStatus } from '../../../src/core/types/http-statuses';
+// @ts-ignore
 import { createPost } from '../../utils/posts/create-post';
+import { runDB, stopDB } from '../../../src/db/mongo.db';
+import { SETTINGS } from '../../../src/core/settings/settings';
 
 describe('Posts API Validation', () => {
   const app = express();
@@ -14,7 +19,12 @@ describe('Posts API Validation', () => {
   const adminToken = generateAuthToken();
 
   beforeAll(async () => {
+    await runDB(SETTINGS.MONGO_URL);
     await clearDatabase(app);
+  });
+
+  afterAll(async () => {
+    await stopDB();
   });
 
   it('❌ should not create post without auth token', async () => {
@@ -24,7 +34,7 @@ describe('Posts API Validation', () => {
     expect(response.status).toBe(HttpStatus.Unauthorized);
   });
 
-  it('❌ should not create a post with invalid data; POST /api/blogs', async () => {
+  it('❌ should not create a post with invalid data; POST /api/posts', async () => {
     const invalidDataOne = {
       title: '',
       shortDescription: '',
@@ -36,7 +46,7 @@ describe('Posts API Validation', () => {
       title: 'a'.repeat(51),
       shortDescription: 'b'.repeat(101),
       content: 'c'.repeat(1001),
-      blogId: '345',
+      blogId: '507f1f77bcf86cd799439011',
     };
 
     const responseOne = await createPost(app, invalidDataOne);
@@ -51,7 +61,19 @@ describe('Posts API Validation', () => {
     expect(responseTwo.body.errorsMessages).toHaveLength(4);
   });
 
-  it('❌ should not update a post with incorrect data and without token', async () => {
+  it('❌ should not update a post without auth token', async () => {
+    const post = await createPost(app);
+    const response = await request(app)
+      .put(`${POSTS_PATH}/${post.body.id}`)
+      .send({
+        title: 'Hello Backend',
+        shortDescription: 'A blog about backend development',
+      });
+
+    expect(response.status).toBe(HttpStatus.Unauthorized);
+  });
+
+  it('❌ should not update a post by id with incorrect data', async () => {
     const post = await createPost(app);
 
     const invalidDataOne = {
@@ -76,10 +98,6 @@ describe('Posts API Validation', () => {
       .set('Authorization', adminToken)
       .send(invalidDataTwo);
 
-    const responseThree = await request(app)
-      .put(`${POSTS_PATH}/${post.body.id}`)
-      .send(invalidDataTwo);
-
     expect(responseOne.status).toBe(HttpStatus.BadRequest);
     expect(responseOne.body).toHaveProperty('errorsMessages');
     expect(responseOne.body.errorsMessages).toHaveLength(4);
@@ -87,11 +105,33 @@ describe('Posts API Validation', () => {
     expect(responseTwo.status).toBe(HttpStatus.BadRequest);
     expect(responseTwo.body).toHaveProperty('errorsMessages');
     expect(responseTwo.body.errorsMessages).toHaveLength(2);
-
-    expect(responseThree.status).toBe(HttpStatus.Unauthorized);
   });
 
-  it('❌ should not delete a blog without auth token', async () => {
+  it('should not update a post with non-existent id', async () => {
+    const post = await createPost(app);
+    const updatedPost = {
+      title: 'Updated Title',
+      shortDescription: 'Updated description',
+      content: 'Updated content here',
+      blogId: post.body.blogId,
+    };
+    const response = await request(app)
+      .put(`${POSTS_PATH}/507f1f77bcf86cd799439011`)
+      .set('Authorization', adminToken)
+      .send(updatedPost);
+
+    expect(response.status).toBe(HttpStatus.NotFound);
+  });
+
+  it('should not delete a post with non-existent id', async () => {
+    const response = await request(app)
+      .delete(`${POSTS_PATH}/507f1f77bcf86cd799439011`)
+      .set('Authorization', adminToken);
+
+    expect(response.status).toBe(HttpStatus.NotFound);
+  });
+
+  it('❌ should not delete a post without auth token', async () => {
     const post = await createPost(app);
     const response = await request(app).delete(`${POSTS_PATH}/${post.body.id}`);
     expect(response.status).toBe(HttpStatus.Unauthorized);
