@@ -6,9 +6,9 @@ import { generateAuthToken } from '../generate-auth-token';
 import { getPostDto } from './get-post-dto';
 import request from 'supertest';
 import { POSTS_PATH } from '../../../src/core/paths/paths';
-import { PostInputModel } from '../../../src/posts/dto/post-input-model';
+import { PostDto } from '../../../src/posts/application/dto/post.dto';
 
-export const createPost = async (app: Express, postDto?: PostInputModel) => {
+export const createPost = async (app: Express, postDto?: PostDto) => {
   const adminToken = generateAuthToken();
   const blog = await createBlog(app);
   const defaultPost = getPostDto(blog.body.id);

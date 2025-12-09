@@ -1,7 +1,15 @@
-import { FieldError } from '../types/fieldError';
+import { ValidationErrorType } from '../types/validationError';
+import { ValidationErrorListOutput } from '../types/validation-error.dto';
 
 export const createErrorMessages = (
-  validationErrors: FieldError[],
-): { errorsMessages: FieldError[] } => {
-  return { errorsMessages: validationErrors };
+  errors: ValidationErrorType[],
+): ValidationErrorListOutput => {
+  return {
+    errors: errors.map((error) => ({
+      status: error.status,
+      detail: error.detail, //error message
+      source: { pointer: error.source ?? '' }, //error field
+      code: error.code ?? null, //domain error code
+    })),
+  };
 };

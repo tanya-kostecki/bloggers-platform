@@ -1,27 +1,28 @@
 import { Post } from '../types/post';
-import { PostInputModel } from '../dto/post-input-model';
+import { PostDto } from '../application/dto/post.dto';
 import { ObjectId, WithId } from 'mongodb';
 import { postsCollection } from '../../db/mongo.db';
 
-export const postsRepository = {
-  findAll: async (): Promise<WithId<Post>[]> => {
+export class PostsRepository {
+  async findAll(): Promise<WithId<Post>[]> {
     return postsCollection.find().toArray();
-  },
-  findOne: async (id: string): Promise<WithId<Post> | null> => {
+  }
+
+  async findOne(id: string): Promise<WithId<Post> | null> {
     return postsCollection.findOne({ _id: new ObjectId(id) });
-  },
-  create: async (post: Post): Promise<WithId<Post>> => {
+  }
+
+  async findByBlogId(blogId: string): Promise<WithId<Post>[]> {
+    return postsCollection.find({ blogId }).toArray();
+  }
+
+  async create(post: Post): Promise<string> {
     const insertedResult = await postsCollection.insertOne(post);
-    return { ...post, _id: insertedResult.insertedId };
-  },
-  update: async (id: string, dto: PostInputModel): Promise<void> => {
-    const post = await postsCollection.findOne({ _id: new ObjectId(id) });
+    return insertedResult.insertedId.toString();
+  }
 
-    if (!post) {
-      throw new Error('Post not found');
-    }
-
-    const updatedResult = await postsCollection.updateOne(
+  async update(id: string, dto: PostDto): Promise<void> {
+    await postsCollection.updateOne(
       { _id: new ObjectId(id) },
       {
         $set: {
@@ -32,20 +33,13 @@ export const postsRepository = {
         },
       },
     );
-
-    if (updatedResult.modifiedCount < 1) {
-      throw new Error('Post not found');
-    }
-
     return;
-  },
-  delete: async (id: string): Promise<void> => {
-    const deletedResult = await postsCollection.deleteOne({
+  }
+
+  async delete(id: string): Promise<void> {
+    await postsCollection.deleteOne({
       _id: new ObjectId(id),
     });
-    if (deletedResult.deletedCount < 1) {
-      throw new Error('Post not found');
-    }
     return;
-  },
-};
+  }
+}

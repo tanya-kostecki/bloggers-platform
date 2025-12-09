@@ -1,21 +1,17 @@
 import { Request, Response } from 'express';
 import { HttpStatus } from '../../../core/types/http-statuses';
-import { BlogDto } from '../../application/dto/blog.dto';
 import { mapToBlogViewModel } from '../mappers/map-to-blog-view-model';
 import { blogsService } from '../../application/blogs.service';
 import { errorsHandler } from '../../../core/errors/errors.handler';
 
-export const createBlogHandler = async (
-  req: Request<{}, {}, BlogDto>,
+export const getOneBlogHandler = async (
+  req: Request<{ id: string }>,
   res: Response,
 ) => {
   try {
-    const createdBlogId = await blogsService.create(req.body);
-
-    const createdBlog = await blogsService.findOneOrFail(createdBlogId);
-
-    const blogViewModel = mapToBlogViewModel(createdBlog);
-    res.status(HttpStatus.Created).send(blogViewModel);
+    const blog = await blogsService.findOneOrFail(req.params.id);
+    const blogViewModel = mapToBlogViewModel(blog);
+    res.status(HttpStatus.Ok).send(blogViewModel);
   } catch (error: unknown) {
     errorsHandler(error, res);
   }

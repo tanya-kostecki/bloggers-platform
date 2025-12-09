@@ -7,7 +7,9 @@ import { adminGuardMiddleware } from '../../auth/middlewares/admin.duard-middlew
 import { blogInputValidationMiddleware } from '../validation/blog-input.validation-middleware';
 import { updateBlogHandler } from './handlers/update-blog.handler';
 import { deleteBlogHandler } from './handlers/delete-blog.handler';
-import { getOneBlogHandler } from './handlers/get-one-block.handler';
+import { getOneBlogHandler } from './handlers/get-one-blog.handler';
+import { getBlogPosts } from './handlers/get-blog-posts';
+import { createBlogPostHandler } from './handlers/create-blog-post';
 
 export const blogsRouter = Router({});
 
@@ -19,12 +21,25 @@ blogsRouter
     inputResultValidationMiddleware,
     getOneBlogHandler,
   )
+  .get(
+    '/:blogId/posts',
+    paramIdValidationMiddleware,
+    inputResultValidationMiddleware,
+    getBlogPosts,
+  )
   .post(
     '/',
     adminGuardMiddleware,
     blogInputValidationMiddleware,
     inputResultValidationMiddleware,
     createBlogHandler,
+  )
+  .post(
+    '/:blogId/posts',
+    adminGuardMiddleware,
+    blogInputValidationMiddleware,
+    inputResultValidationMiddleware,
+    createBlogPostHandler,
   )
   .put(
     '/:id',

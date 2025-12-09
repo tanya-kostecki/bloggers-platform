@@ -1,28 +1,17 @@
 import { Request, Response } from 'express';
 import { HttpStatus } from '../../../core/types/http-statuses';
-import { blogsRepository } from '../../repositories/blogs.repository';
-import { BlogInputModel } from '../../dto/blog-input-model';
-import { createErrorMessages } from '../../../core/utils/createErrorMessages';
+import { BlogDto } from '../../application/dto/blog.dto';
+import { errorsHandler } from '../../../core/errors/errors.handler';
+import { blogsService } from '../../application/blogs.service';
 
 export const updateBlogHandler = async (
-  req: Request<{ id: string }, {}, BlogInputModel>,
+  req: Request<{ id: string }, {}, BlogDto>,
   res: Response,
 ) => {
   try {
-    const targetBlog = await blogsRepository.findOne(req.params.id);
-
-    if (!targetBlog) {
-      res
-        .status(HttpStatus.NotFound)
-        .send(
-          createErrorMessages([{ field: 'id', message: 'Blog not found' }]),
-        );
-      return;
-    }
-
-    await blogsRepository.update(req.params.id, req.body);
+    await blogsService.update(req.params.id, req.body);
     res.sendStatus(HttpStatus.NoContent);
-  } catch {
-    res.sendStatus(HttpStatus.InternalServerError);
+  } catch (error: unknown) {
+    errorsHandler(error, res);
   }
 };
