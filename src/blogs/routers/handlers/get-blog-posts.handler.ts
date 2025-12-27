@@ -6,6 +6,7 @@ import { postsService } from '../../../posts/application/posts.service';
 import { mapToPostsToPaginatedOutput } from '../../../posts/routers/mappers/map-posts-to-paginated-output';
 import { PostsQueryInput } from '../../../posts/routers/input/post-query-input';
 import { matchedData } from 'express-validator';
+import { setDefaultSortAndPaginationIfNotExist } from '../../../core/helpers/set-defaut-pagination-and-sorting';
 
 export const getBlogPostsHandler = async (
   req: Request<{ blogId: string }>,
@@ -18,9 +19,11 @@ export const getBlogPostsHandler = async (
       locations: ['query'],
       includeOptionals: true,
     }) as PostsQueryInput;
+
+    const queryInput = setDefaultSortAndPaginationIfNotExist(query);
     const { items, totalCount } = await postsService.findByBlogId(
       blog._id.toString(),
-      query,
+      queryInput,
     );
 
     const blogPaginatedOutput = mapToPostsToPaginatedOutput(items, {

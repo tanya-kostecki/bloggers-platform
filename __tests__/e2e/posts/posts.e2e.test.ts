@@ -84,4 +84,97 @@ describe('Posts API', () => {
     expect(resultedPost.body.shortDescription).toBe('Updated description');
     expect(resultedPost.body.content).toBe('Updated content here');
   });
+
+  describe('Pagination and Sorting', () => {
+    let testPosts: any[];
+
+    beforeEach(async () => {
+      await clearDatabase(app);
+      testPosts = [];
+
+      // Create posts with specific titles for testing
+      const post1 = await createPost(app, { title: 'Alpha Post' });
+      const post2 = await createPost(app, { title: 'Beta Post' });
+      const post3 = await createPost(app, { title: 'Gamma Post' });
+      const post4 = await createPost(app, { title: 'Delta Post' });
+      const post5 = await createPost(app, { title: 'Epsilon Post' });
+
+      testPosts = [post1, post2, post3, post4, post5];
+    });
+
+    it('should paginate posts with custom pageSize', async () => {
+      const response = await request(app).get(`${POSTS_PATH}?pageSize=2`);
+
+      expect(response.status).toBe(HttpStatus.Ok);
+      expect(response.body.pageSize).toBe(2);
+      expect(response.body.items).toHaveLength(2);
+      expect(response.body.totalCount).toBe(5);
+      expect(response.body.pagesCount).toBe(3);
+    });
+
+    it('should return second page of posts', async () => {
+      const response = await request(app).get(
+        `${POSTS_PATH}?pageSize=2&pageNumber=2`,
+      );
+
+      expect(response.status).toBe(HttpStatus.Ok);
+      expect(response.body.page).toBe(2);
+      expect(response.body.pageSize).toBe(2);
+      expect(response.body.items).toHaveLength(2);
+    });
+
+    it('should sort posts by title ascending', async () => {
+      const response = await request(app).get(
+        `${POSTS_PATH}?sortBy=title&sortDirection=asc`,
+      );
+
+      expect(response.status).toBe(HttpStatus.Ok);
+      expect(response.body.items[0].title).toBe('Alpha Post');
+      expect(response.body.items[1].title).toBe('Beta Post');
+    });
+
+    it('should sort posts by title descending', async () => {
+      const response = await request(app).get(
+        `${POSTS_PATH}?sortBy=title&sortDirection=desc`,
+      );
+
+      expect(response.status).toBe(HttpStatus.Ok);
+      expect(response.body.items[0].title).toBe('Gamma Post');
+      expect(response.body.items[1].title).toBe('Epsilon Post');
+    });
+
+    it('should filter posts by searchTitleTerm', async () => {
+      const response = await request(app).get(
+        `${POSTS_PATH}?searchTitleTerm=Beta`,
+      );
+
+      expect(response.status).toBe(HttpStatus.Ok);
+      expect(response.body.totalCount).toBe(1);
+      expect(response.body.items[0].title).toBe('Beta Post');
+    });
+
+    it('should combine pagination, sorting, and search', async () => {
+      // Create more posts for better testing
+      await createPost(app, {
+        title: 'Alpha Test',
+        shortDescription: 'test description',
+        content: 'this is the content for the post',
+      });
+      await createPost(app, {
+        title: 'Alpha Dev',
+        shortDescription: 'test description',
+        content: 'this is the content for the post',
+      });
+
+      const response = await request(app).get(
+        `${POSTS_PATH}?searchTitleTerm=Alpha&sortBy=title&sortDirection=asc&pageSize=2`,
+      );
+
+      expect(response.status).toBe(HttpStatus.Ok);
+      expect(response.body.totalCount).toBe(3); // Alpha Post, Alpha Test, Alpha Dev
+      expect(response.body.items).toHaveLength(2);
+      expect(response.body.items[0].title).toBe('Alpha Dev');
+      expect(response.body.items[1].title).toBe('Alpha Post');
+    });
+  });
 });

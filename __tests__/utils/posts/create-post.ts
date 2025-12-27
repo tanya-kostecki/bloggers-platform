@@ -8,7 +8,7 @@ import request from 'supertest';
 import { POSTS_PATH } from '../../../src/core/paths/paths';
 import { PostDto } from '../../../src/posts/application/dto/post.dto';
 
-export const createPost = async (app: Express, postDto?: PostDto) => {
+export const createPost = async (app: Express, postDto?: Partial<PostDto>) => {
   const adminToken = generateAuthToken();
   const blog = await createBlog(app);
   const defaultPost = getPostDto(blog.body.id);

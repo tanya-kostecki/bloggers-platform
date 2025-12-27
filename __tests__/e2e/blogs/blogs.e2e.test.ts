@@ -96,4 +96,83 @@ describe('Blogs API', () => {
 
     expect(response.status).toBe(HttpStatus.NoContent);
   });
+
+  describe('Pagination and Sorting', () => {
+    beforeEach(async () => {
+      await clearDatabase(app);
+      // Create test blogs with specific names for testing
+      await createBlog(app, { ...getBlogDto(), name: 'Alpha Blog' });
+      await createBlog(app, { ...getBlogDto(), name: 'Beta Blog' });
+      await createBlog(app, { ...getBlogDto(), name: 'Gamma Blog' });
+      await createBlog(app, { ...getBlogDto(), name: 'Delta Blog' });
+      await createBlog(app, { ...getBlogDto(), name: 'Epsilon Blog' });
+    });
+
+    it('should paginate blogs with custom pageSize', async () => {
+      const response = await request(app).get(`${BLOGS_PATH}?pageSize=2`);
+
+      expect(response.status).toBe(HttpStatus.Ok);
+      expect(response.body.pageSize).toBe(2);
+      expect(response.body.items).toHaveLength(2);
+      expect(response.body.totalCount).toBe(5);
+      expect(response.body.pagesCount).toBe(3);
+    });
+
+    it('should return second page of blogs', async () => {
+      const response = await request(app).get(
+        `${BLOGS_PATH}?pageSize=2&pageNumber=2`,
+      );
+
+      expect(response.status).toBe(HttpStatus.Ok);
+      expect(response.body.page).toBe(2);
+      expect(response.body.pageSize).toBe(2);
+      expect(response.body.items).toHaveLength(2);
+    });
+
+    it('should sort blogs by name ascending', async () => {
+      const response = await request(app).get(
+        `${BLOGS_PATH}?sortBy=name&sortDirection=asc`,
+      );
+
+      expect(response.status).toBe(HttpStatus.Ok);
+      expect(response.body.items[0].name).toBe('Alpha Blog');
+      expect(response.body.items[1].name).toBe('Beta Blog');
+    });
+
+    it('should sort blogs by name descending', async () => {
+      const response = await request(app).get(
+        `${BLOGS_PATH}?sortBy=name&sortDirection=desc`,
+      );
+
+      expect(response.status).toBe(HttpStatus.Ok);
+      expect(response.body.items[0].name).toBe('Gamma Blog');
+      expect(response.body.items[1].name).toBe('Epsilon Blog');
+    });
+
+    it('should filter blogs by searchNameTerm', async () => {
+      const response = await request(app).get(
+        `${BLOGS_PATH}?searchNameTerm=Beta`,
+      );
+
+      expect(response.status).toBe(HttpStatus.Ok);
+      expect(response.body.totalCount).toBe(1);
+      expect(response.body.items[0].name).toBe('Beta Blog');
+    });
+
+    it('should combine pagination, sorting, and search', async () => {
+      // Create more blogs for better testing
+      await createBlog(app, { ...getBlogDto(), name: 'Alpha Test' });
+      await createBlog(app, { ...getBlogDto(), name: 'Alpha Dev' });
+
+      const response = await request(app).get(
+        `${BLOGS_PATH}?searchNameTerm=Alpha&sortBy=name&sortDirection=asc&pageSize=2`,
+      );
+
+      expect(response.status).toBe(HttpStatus.Ok);
+      expect(response.body.totalCount).toBe(3); // Alpha Blog, Alpha Test, Alpha Dev
+      expect(response.body.items).toHaveLength(2);
+      expect(response.body.items[0].name).toBe('Alpha Blog');
+      expect(response.body.items[1].name).toBe('Alpha Dev');
+    });
+  });
 });

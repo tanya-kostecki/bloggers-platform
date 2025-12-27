@@ -5,6 +5,7 @@ import { errorsHandler } from '../../../core/errors/errors.handler';
 import { BlogsQueryInput } from '../input/blogs-query-input';
 import { mapToBlogsToPaginatedOutput } from '../mappers/map-blogs-to-paginated-output';
 import { matchedData } from 'express-validator';
+import { setDefaultSortAndPaginationIfNotExist } from '../../../core/helpers/set-defaut-pagination-and-sorting';
 
 export const getAllBlogsHandler = async (req: Request, res: Response) => {
   try {
@@ -12,7 +13,10 @@ export const getAllBlogsHandler = async (req: Request, res: Response) => {
       locations: ['query'],
       includeOptionals: true,
     }) as BlogsQueryInput;
-    const { items, totalCount } = await blogsService.findAll(query);
+
+    const queryInput = setDefaultSortAndPaginationIfNotExist(query);
+    const { items, totalCount } = await blogsService.findAll(queryInput);
+
     const blogPaginatedOutput = mapToBlogsToPaginatedOutput(items, {
       pageNumber: query.pageNumber,
       pageSize: query.pageSize,

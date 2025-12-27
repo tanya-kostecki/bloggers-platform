@@ -5,6 +5,7 @@ import { errorsHandler } from '../../../core/errors/errors.handler';
 import { PostsQueryInput } from '../input/post-query-input';
 import { mapToPostsToPaginatedOutput } from '../mappers/map-posts-to-paginated-output';
 import { matchedData } from 'express-validator';
+import { setDefaultSortAndPaginationIfNotExist } from '../../../core/helpers/set-defaut-pagination-and-sorting';
 
 export const getAllPostsHandler = async (req: Request, res: Response) => {
   try {
@@ -12,7 +13,8 @@ export const getAllPostsHandler = async (req: Request, res: Response) => {
       locations: ['query'],
       includeOptionals: true,
     }) as PostsQueryInput;
-    const { items, totalCount } = await postsService.findAll(query);
+    const queryInput = setDefaultSortAndPaginationIfNotExist(query);
+    const { items, totalCount } = await postsService.findAll(queryInput);
     const postPaginatedOutput = mapToPostsToPaginatedOutput(items, {
       pageNumber: query.pageNumber,
       pageSize: query.pageSize,

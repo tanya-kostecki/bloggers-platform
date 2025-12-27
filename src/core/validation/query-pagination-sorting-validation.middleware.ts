@@ -1,16 +1,25 @@
 import { query } from 'express-validator';
 import { SortDirection } from '../types/sort-direction';
+import { PaginationAndSorting } from '../types/pagination-and-sorting';
 
-const DEFAULT_PAGE = 1;
+const DEFAULT_PAGE_NUMBER = 1;
 const DEFAULT_PAGE_SIZE = 10;
 const DEFAULT_SORT_DIRECTION = SortDirection.Desc;
+const DEFAULT_SORT_BY = 'createdAt';
+
+export const paginationAndSortingDefault: PaginationAndSorting<string> = {
+  pageNumber: DEFAULT_PAGE_NUMBER,
+  pageSize: DEFAULT_PAGE_SIZE,
+  sortBy: DEFAULT_SORT_BY,
+  sortDirection: DEFAULT_SORT_DIRECTION,
+};
 
 export function paginationAndSortingValidation<T extends string>(
   sortFieldsEnum: Record<string, T>,
 ) {
   return [
     query('pageNumber')
-      .default(DEFAULT_PAGE)
+      .default(DEFAULT_PAGE_NUMBER)
       .isInt({ min: 1 })
       .withMessage('Page number must be a positive integer')
       .toInt(),
@@ -34,5 +43,9 @@ export function paginationAndSortingValidation<T extends string>(
       .withMessage(
         `Sort direction must be one of: ${Object.values(SortDirection).join(', ')}`,
       ),
+
+    // Search parameters - all optional
+    query('searchNameTerm').optional().isString().trim(),
+    query('searchTitleTerm').optional().isString().trim(),
   ];
 }
