@@ -1,6 +1,6 @@
 import { Post } from '../types/post';
 import { PostDto } from '../application/dto/post.dto';
-import { Filter, ObjectId, WithId } from 'mongodb';
+import { ObjectId, WithId } from 'mongodb';
 import { postsCollection } from '../../db/mongo.db';
 import { PostsQueryInput } from '../routers/input/post-query-input';
 
@@ -8,23 +8,17 @@ export class PostsRepository {
   async findAll(
     query: PostsQueryInput,
   ): Promise<{ items: WithId<Post>[]; totalCount: number }> {
-    const { pageNumber, pageSize, searchTitleTerm, sortBy, sortDirection } =
-      query;
+    const { pageNumber, pageSize, sortBy, sortDirection } = query;
     const skip = (pageNumber - 1) * pageSize;
-    const filter: Filter<Post> = {};
-
-    if (searchTitleTerm) {
-      filter.title = { $regex: searchTitleTerm, $options: 'i' };
-    }
 
     const items = await postsCollection
-      .find(filter)
-      .sort({ [sortBy]: sortDirection })
+      .find()
+      .sort({ [sortBy]: sortDirection === 'asc' ? 1 : -1 })
       .skip(skip)
       .limit(pageSize)
       .toArray();
 
-    const totalCount = await postsCollection.countDocuments(filter);
+    const totalCount = await postsCollection.countDocuments();
     return { items, totalCount };
   }
 
@@ -36,24 +30,17 @@ export class PostsRepository {
     blogId: string,
     query: PostsQueryInput,
   ): Promise<{ items: WithId<Post>[]; totalCount: number }> {
-    const { pageNumber, pageSize, sortBy, sortDirection, searchTitleTerm } =
-      query;
+    const { pageNumber, pageSize, sortBy, sortDirection } = query;
     const skip = (pageNumber - 1) * pageSize;
-    const filter: Filter<Post> = {};
-
-    if (searchTitleTerm) {
-      filter.title = { $regex: searchTitleTerm, $options: 'i' };
-    }
 
     const items = await postsCollection
-      .find({ ...filter, blogId: blogId })
+      .find({ blogId: blogId })
       .sort({ [sortBy]: sortDirection === 'asc' ? 1 : -1 })
       .skip(skip)
       .limit(pageSize)
       .toArray();
 
     const totalCount = await postsCollection.countDocuments({
-      ...filter,
       blogId: blogId,
     });
 

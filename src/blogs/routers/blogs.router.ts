@@ -24,7 +24,7 @@ export const blogsRouter = Router({});
 blogsRouter
   .get(
     '/',
-    paginationAndSortingValidation(BlogSortFieldEnum),
+    ...paginationAndSortingValidation(BlogSortFieldEnum),
     query('searchNameTerm').optional().isString().trim(),
     inputResultValidationMiddleware,
     getAllBlogsHandler,
@@ -38,7 +38,7 @@ blogsRouter
   .get(
     '/:blogId/posts',
     paramBlogIdValidationMiddleware,
-    paginationAndSortingValidation(PostSortFieldEnum),
+    ...paginationAndSortingValidation(PostSortFieldEnum),
     inputResultValidationMiddleware,
     getBlogPostsHandler,
   )

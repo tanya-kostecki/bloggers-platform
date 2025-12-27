@@ -142,39 +142,5 @@ describe('Posts API', () => {
       expect(response.body.items[0].title).toBe('Gamma Post');
       expect(response.body.items[1].title).toBe('Epsilon Post');
     });
-
-    it('should filter posts by searchTitleTerm', async () => {
-      const response = await request(app).get(
-        `${POSTS_PATH}?searchTitleTerm=Beta`,
-      );
-
-      expect(response.status).toBe(HttpStatus.Ok);
-      expect(response.body.totalCount).toBe(1);
-      expect(response.body.items[0].title).toBe('Beta Post');
-    });
-
-    it('should combine pagination, sorting, and search', async () => {
-      // Create more posts for better testing
-      await createPost(app, {
-        title: 'Alpha Test',
-        shortDescription: 'test description',
-        content: 'this is the content for the post',
-      });
-      await createPost(app, {
-        title: 'Alpha Dev',
-        shortDescription: 'test description',
-        content: 'this is the content for the post',
-      });
-
-      const response = await request(app).get(
-        `${POSTS_PATH}?searchTitleTerm=Alpha&sortBy=title&sortDirection=asc&pageSize=2`,
-      );
-
-      expect(response.status).toBe(HttpStatus.Ok);
-      expect(response.body.totalCount).toBe(3); // Alpha Post, Alpha Test, Alpha Dev
-      expect(response.body.items).toHaveLength(2);
-      expect(response.body.items[0].title).toBe('Alpha Dev');
-      expect(response.body.items[1].title).toBe('Alpha Post');
-    });
   });
 });
