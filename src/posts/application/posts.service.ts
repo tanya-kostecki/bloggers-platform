@@ -9,6 +9,7 @@ import {
   BlogsService,
 } from '../../blogs/application/blogs.service';
 import { CreatePostDto } from './dto/create-post.dto';
+import { PostsQueryInput } from '../routers/input/post-query-input';
 
 export class PostsService {
   constructor(
@@ -16,8 +17,10 @@ export class PostsService {
     private readonly blogsService: BlogsService,
   ) {}
 
-  async findAll(): Promise<WithId<Post>[]> {
-    return this.postsRepository.findAll();
+  async findAll(
+    query: PostsQueryInput,
+  ): Promise<{ items: WithId<Post>[]; totalCount: number }> {
+    return this.postsRepository.findAll(query);
   }
 
   async findOne(id: string): Promise<WithId<Post> | null> {

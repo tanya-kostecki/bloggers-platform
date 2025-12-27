@@ -1,11 +1,34 @@
 import { Post } from '../types/post';
 import { PostDto } from '../application/dto/post.dto';
-import { ObjectId, WithId } from 'mongodb';
+import { Filter, ObjectId, WithId } from 'mongodb';
 import { postsCollection } from '../../db/mongo.db';
+import { PostsQueryInput } from '../routers/input/post-query-input';
 
 export class PostsRepository {
-  async findAll(): Promise<WithId<Post>[]> {
-    return postsCollection.find().toArray();
+  async findAll(
+    query: PostsQueryInput,
+  ): Promise<{ items: WithId<Post>[]; totalCount: number }> {
+    const { pageNumber, pageSize, searchPostTitleTerm, sortBy, sortDirection } =
+      query;
+    const skip = (pageNumber - 1) * pageSize;
+    const filter: Filter<Post> = {};
+
+    filter.$or = [];
+    if (searchPostTitleTerm) {
+      filter.$or.push({
+        title: { $regex: searchPostTitleTerm, $options: 'i' },
+      });
+    }
+
+    const items = await postsCollection
+      .find(filter)
+      .sort({ [sortBy]: sortDirection })
+      .skip(skip)
+      .limit(pageSize)
+      .toArray();
+
+    const totalCount = await postsCollection.countDocuments(filter);
+    return { items, totalCount };
   }
 
   async findOne(id: string): Promise<WithId<Post> | null> {
