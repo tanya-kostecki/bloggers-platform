@@ -6,13 +6,10 @@ import { createErrorMessages } from '../utils/createErrorMessages';
 
 export function errorsHandler(error: unknown, res: Response): void {
   if (error instanceof NotFoundError) {
-    const httpStatus = HttpStatus.NotFound;
-
-    res.status(httpStatus).send(
+    res.status(HttpStatus.NotFound).send(
       createErrorMessages([
         {
-          status: httpStatus,
-          detail: error.message,
+          message: error.message,
         },
       ]),
     );
@@ -21,15 +18,11 @@ export function errorsHandler(error: unknown, res: Response): void {
   }
 
   if (error instanceof DomainError) {
-    const httpStatus = HttpStatus.UnprocessableEntity;
-
-    res.status(httpStatus).send(
+    res.status(HttpStatus.UnprocessableEntity).send(
       createErrorMessages([
         {
-          status: httpStatus,
-          source: error.source,
-          detail: error.message,
-          code: error.code,
+          message: error.message,
+          field: error.source,
         },
       ]),
     );
@@ -40,8 +33,7 @@ export function errorsHandler(error: unknown, res: Response): void {
   res.status(HttpStatus.InternalServerError).send(
     createErrorMessages([
       {
-        status: HttpStatus.InternalServerError,
-        detail: 'Internal Server Error',
+        message: 'Internal Server Error',
       },
     ]),
   );
