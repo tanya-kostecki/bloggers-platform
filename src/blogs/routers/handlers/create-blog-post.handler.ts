@@ -1,17 +1,22 @@
 import { Request, Response } from 'express';
-import { PostDto } from '../../application/dto/post.dto';
 import { HttpStatus } from '../../../core/types/http-statuses';
-import { mapPostToViewModel } from '../mappers/map-to-post-view-model';
-import { postsService } from '../../application/posts.service';
 import { errorsHandler } from '../../../core/errors/errors.handler';
+import { postsService } from '../../../posts/application/posts.service';
+import { CreatePostDto } from '../../../posts/application/dto/create-post.dto';
+import { mapPostToViewModel } from '../../../posts/routers/mappers/map-to-post-view-model';
 
-export const createPostHandler = async (
-  req: Request<{}, {}, PostDto>,
+export const createBlogPostHandler = async (
+  req: Request<{ blogId: string }, {}, CreatePostDto>,
   res: Response,
 ) => {
   try {
-    const createdPostId = await postsService.create(req.body);
+    const createdPostId = await postsService.createByBlogId(
+      req.params.blogId,
+      req.body,
+    );
+
     const createdPost = await postsService.findOneOrFail(createdPostId);
+
     const postViewModel = mapPostToViewModel(createdPost);
     res.status(HttpStatus.Created).send(postViewModel);
   } catch (error: unknown) {

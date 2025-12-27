@@ -1,6 +1,6 @@
-import { PostInputModel } from '../../../src/posts/dto/post-input-model';
+import { PostDto } from '../../../src/posts/application/dto/post.dto';
 
-export const getPostDto = (blogId: string): PostInputModel => {
+export const getPostDto = (blogId: string): PostDto => {
   return {
     title: 'The Future',
     shortDescription:

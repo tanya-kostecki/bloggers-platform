@@ -1,26 +1,17 @@
-import { PostInputModel } from '../../dto/post-input-model';
+import { PostDto } from '../../application/dto/post.dto';
 import { Request, Response } from 'express';
-import { postsRepository } from '../../repositories/posts.repository';
 import { HttpStatus } from '../../../core/types/http-statuses';
-import { createErrorMessages } from '../../../core/utils/createErrorMessages';
+import { postsService } from '../../application/posts.service';
+import { errorsHandler } from '../../../core/errors/errors.handler';
 
 export const updatePostHandler = async (
-  req: Request<{ id: string }, {}, PostInputModel>,
+  req: Request<{ id: string }, {}, PostDto>,
   res: Response,
 ) => {
   try {
-    const postForUpdate = await postsRepository.findOne(req.params.id);
-    if (!postForUpdate) {
-      return res
-        .status(HttpStatus.NotFound)
-        .send(
-          createErrorMessages([{ field: 'id', message: 'Post not found.' }]),
-        );
-    }
-
-    await postsRepository.update(req.params.id, req.body);
+    await postsService.update(req.params.id, req.body);
     res.sendStatus(HttpStatus.NoContent);
-  } catch {
-    res.sendStatus(HttpStatus.InternalServerError);
+  } catch (error: unknown) {
+    errorsHandler(error, res);
   }
 };

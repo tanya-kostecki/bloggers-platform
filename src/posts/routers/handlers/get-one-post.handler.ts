@@ -1,28 +1,18 @@
 import { Request, Response } from 'express';
-import { postsRepository } from '../../repositories/posts.repository';
 import { HttpStatus } from '../../../core/types/http-statuses';
-import { createErrorMessages } from '../../../core/utils/createErrorMessages';
-import { mapPostToViewModel } from '../mappers/mapt-to-post-view-model';
+import { postsService } from '../../application/posts.service';
+import { mapPostToViewModel } from '../mappers/map-to-post-view-model';
+import { errorsHandler } from '../../../core/errors/errors.handler';
 
 export const getOnePostHandler = async (
   req: Request<{ id: string }>,
   res: Response,
 ) => {
   try {
-    const post = await postsRepository.findOne(req.params.id);
-
-    if (!post) {
-      res
-        .status(HttpStatus.NotFound)
-        .send(
-          createErrorMessages([{ field: 'id', message: 'Post not found.' }]),
-        );
-      return;
-    }
-
+    const post = await postsService.findOneOrFail(req.params.id);
     const postViewModel = mapPostToViewModel(post);
     res.status(HttpStatus.Ok).send(postViewModel);
-  } catch {
-    res.sendStatus(HttpStatus.InternalServerError);
+  } catch (error: unknown) {
+    errorsHandler(error, res);
   }
 };

@@ -1,14 +1,25 @@
 import { Request, Response } from 'express';
-import { postsRepository } from '../../repositories/posts.repository';
 import { HttpStatus } from '../../../core/types/http-statuses';
-import { mapPostToViewModel } from '../mappers/mapt-to-post-view-model';
+import { postsService } from '../../application/posts.service';
+import { errorsHandler } from '../../../core/errors/errors.handler';
+import { PostsQueryInput } from '../input/post-query-input';
+import { mapToPostsToPaginatedOutput } from '../mappers/map-posts-to-paginated-output';
+import { matchedData } from 'express-validator';
 
-export const getAllPostsHandler = async (req: Request, res: Response) => {
+export const getAllPostsHandler = async (
+  req: Request,
+  res: Response,
+) => {
   try {
-    const posts = await postsRepository.findAll();
-    const postViewModels = posts.map(mapPostToViewModel);
-    res.status(HttpStatus.Ok).send(postViewModels);
-  } catch {
-    res.sendStatus(HttpStatus.InternalServerError);
+    const query = matchedData(req) as PostsQueryInput;
+    const { items, totalCount } = await postsService.findAll(query);
+    const postPaginatedOutput = mapToPostsToPaginatedOutput(items, {
+      pageNumber: query.pageNumber,
+      pagesSize: query.pageSize,
+      totalCount,
+    });
+    res.status(HttpStatus.Ok).send(postPaginatedOutput);
+  } catch (error: unknown) {
+    errorsHandler(error, res);
   }
 };

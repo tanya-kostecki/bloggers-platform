@@ -1,7 +1,12 @@
 import { FieldError } from '../types/fieldError';
 
 export const createErrorMessages = (
-  validationErrors: FieldError[],
+  errors: Array<{ message: string; field?: string }>,
 ): { errorsMessages: FieldError[] } => {
-  return { errorsMessages: validationErrors };
+  return {
+    errorsMessages: errors.map((error) => ({
+      message: error.message,
+      field: error.field ?? '',
+    })),
+  };
 };

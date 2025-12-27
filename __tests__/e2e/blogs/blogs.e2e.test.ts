@@ -9,7 +9,7 @@ import { getBlogDto } from '../../utils/blogs/get.blog-dto';
 import request from 'supertest';
 import { BLOGS_PATH } from '../../../src/core/paths/paths';
 import { HttpStatus } from '../../../src/core/types/http-statuses';
-import { BlogInputModel } from '../../../src/blogs/dto/blog-input-model';
+import { BlogDto } from '../../../src/blogs/application/dto/blog.dto';
 // @ts-ignore
 import { createBlog } from '../../utils/blogs/create-blog';
 import { runDB, stopDB } from '../../../src/db/mongo.db';
@@ -31,7 +31,7 @@ describe('Blogs API', () => {
   });
 
   it('✅ should create a blog; POST /api/blogs', async () => {
-    const newBlog: BlogInputModel = {
+    const newBlog: BlogDto = {
       ...getBlogDto(),
       name: 'Backend',
       description: 'A very short description of the blog',
@@ -49,8 +49,13 @@ describe('Blogs API', () => {
     const response = await request(app).get(BLOGS_PATH);
 
     expect(response.status).toBe(HttpStatus.Ok);
-    expect(response.body).toBeInstanceOf(Array);
-    expect(response.body.length).toBeGreaterThanOrEqual(2);
+    expect(response.body).toHaveProperty('items');
+    expect(response.body.items).toBeInstanceOf(Array);
+    expect(response.body.items.length).toBeGreaterThanOrEqual(2);
+    expect(response.body).toHaveProperty('page');
+    expect(response.body).toHaveProperty('pagesSize');
+    expect(response.body).toHaveProperty('pagesCount');
+    expect(response.body).toHaveProperty('totalCount');
   });
 
   it('should return a blog by id', async () => {

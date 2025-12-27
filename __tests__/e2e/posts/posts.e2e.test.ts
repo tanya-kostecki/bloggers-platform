@@ -41,7 +41,13 @@ describe('Posts API', () => {
     const response = await request(app).get(POSTS_PATH);
 
     expect(response.status).toBe(HttpStatus.Ok);
-    expect(response.body.length).toBeGreaterThanOrEqual(2);
+    expect(response.body).toHaveProperty('items');
+    expect(response.body.items).toBeInstanceOf(Array);
+    expect(response.body.items.length).toBeGreaterThanOrEqual(2);
+    expect(response.body).toHaveProperty('page');
+    expect(response.body).toHaveProperty('pagesSize');
+    expect(response.body).toHaveProperty('pagesCount');
+    expect(response.body).toHaveProperty('totalCount');
   });
 
   it('should return posts by id; GET /api/posts/:id', async () => {

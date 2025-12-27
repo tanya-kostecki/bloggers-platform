@@ -1,6 +1,6 @@
-import { BlogInputModel } from '../../../src/blogs/dto/blog-input-model';
+import { BlogDto } from '../../../src/blogs/application/dto/blog.dto';
 
-export const getBlogDto = (): BlogInputModel => {
+export const getBlogDto = (): BlogDto => {
   return {
     name: 'Tech Insights',
     description: 'A blog about the latest technology trends and innovations',
