@@ -14,7 +14,10 @@ export const getBlogPostsHandler = async (
   try {
     const blog = await blogsService.findOneOrFail(req.params.blogId);
 
-    const query = matchedData(req) as PostsQueryInput;
+    const query = matchedData(req, {
+      locations: ['query'],
+      includeOptionals: true,
+    }) as PostsQueryInput;
     const { items, totalCount } = await postsService.findByBlogId(
       blog._id.toString(),
       query,

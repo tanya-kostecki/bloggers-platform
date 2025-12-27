@@ -6,12 +6,12 @@ import { BlogsQueryInput } from '../input/blogs-query-input';
 import { mapToBlogsToPaginatedOutput } from '../mappers/map-blogs-to-paginated-output';
 import { matchedData } from 'express-validator';
 
-export const getAllBlogsHandler = async (
-  req: Request,
-  res: Response,
-) => {
+export const getAllBlogsHandler = async (req: Request, res: Response) => {
   try {
-    const query = matchedData(req) as BlogsQueryInput;
+    const query = matchedData(req, {
+      locations: ['query'],
+      includeOptionals: true,
+    }) as BlogsQueryInput;
     const { items, totalCount } = await blogsService.findAll(query);
     const blogPaginatedOutput = mapToBlogsToPaginatedOutput(items, {
       pageNumber: query.pageNumber,

@@ -35,16 +35,8 @@ export function paginationAndSortingValidation<T extends string>(
         `Sort direction must be one of: ${Object.values(SortDirection).join(', ')}`,
       ),
 
-    query('searchNameTerm')
-      .optional()
-      .isString()
-      .withMessage('Search name term must be a string')
-      .trim(),
-
-    query('searchTitleTerm')
-      .optional()
-      .isString()
-      .withMessage('Search title term must be a string')
-      .trim(),
+    // Allow any search parameters - they're all optional
+    query('searchNameTerm').optional().isString().trim(),
+    query('searchTitleTerm').optional().isString().trim(),
   ];
 }

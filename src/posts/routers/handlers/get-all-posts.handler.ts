@@ -6,12 +6,12 @@ import { PostsQueryInput } from '../input/post-query-input';
 import { mapToPostsToPaginatedOutput } from '../mappers/map-posts-to-paginated-output';
 import { matchedData } from 'express-validator';
 
-export const getAllPostsHandler = async (
-  req: Request,
-  res: Response,
-) => {
+export const getAllPostsHandler = async (req: Request, res: Response) => {
   try {
-    const query = matchedData(req) as PostsQueryInput;
+    const query = matchedData(req, {
+      locations: ['query'],
+      includeOptionals: true,
+    }) as PostsQueryInput;
     const { items, totalCount } = await postsService.findAll(query);
     const postPaginatedOutput = mapToPostsToPaginatedOutput(items, {
       pageNumber: query.pageNumber,
