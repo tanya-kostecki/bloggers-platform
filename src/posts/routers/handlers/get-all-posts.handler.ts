@@ -15,7 +15,7 @@ export const getAllPostsHandler = async (
     const { items, totalCount } = await postsService.findAll(query);
     const postPaginatedOutput = mapToPostsToPaginatedOutput(items, {
       pageNumber: query.pageNumber,
-      pagesSize: query.pageSize,
+      pageSize: query.pageSize,
       totalCount,
     });
     res.status(HttpStatus.Ok).send(postPaginatedOutput);

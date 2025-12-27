@@ -5,12 +5,12 @@ import { mapPostToViewModel } from './map-to-post-view-model';
 
 export const mapToPostsToPaginatedOutput = (
   posts: WithId<Post>[],
-  meta: { pageNumber: number; pagesSize: number; totalCount: number },
+  meta: { pageNumber: number; pageSize: number; totalCount: number },
 ): PostListPaginatedOutput => {
   return {
+    pagesCount: Math.ceil(meta.totalCount / meta.pageSize),
     page: meta.pageNumber,
-    pagesSize: meta.pagesSize,
-    pagesCount: Math.ceil(meta.totalCount / meta.pagesSize),
+    pageSize: meta.pageSize,
     totalCount: meta.totalCount,
     items: posts.map(mapPostToViewModel),
   };

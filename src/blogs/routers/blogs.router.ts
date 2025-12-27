@@ -15,7 +15,7 @@ import { getBlogPostsHandler } from './handlers/get-blog-posts.handler';
 import { createBlogPostHandler } from './handlers/create-blog-post.handler';
 import { paginationAndSortingValidation } from '../../core/validation/query-pagination-sorting-validation.middleware';
 import { BlogSortFieldEnum } from './input/blogs-sort-field';
-import { postInputValidationMiddleware } from '../../posts/validation/post-input.validation-middleware';
+import { blogPostInputValidationMiddleware } from '../../posts/validation/post-input.validation-middleware';
 import { PostSortFieldEnum } from '../../posts/routers/input/post-sort-field';
 
 export const blogsRouter = Router({});
@@ -51,7 +51,7 @@ blogsRouter
     '/:blogId/posts',
     adminGuardMiddleware,
     paramBlogIdValidationMiddleware,
-    postInputValidationMiddleware,
+    blogPostInputValidationMiddleware,
     inputResultValidationMiddleware,
     createBlogPostHandler,
   )

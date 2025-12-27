@@ -5,12 +5,12 @@ import { mapToBlogViewModel } from './map-to-blog-view-model';
 
 export const mapToBlogsToPaginatedOutput = (
   blogs: WithId<Blog>[],
-  meta: { pageNumber: number; pagesSize: number; totalCount: number },
+  meta: { pageNumber: number; pageSize: number; totalCount: number },
 ): BlogListPaginatedOutput => {
   return {
+    pagesCount: Math.ceil(meta.totalCount / meta.pageSize),
     page: meta.pageNumber,
-    pagesSize: meta.pagesSize,
-    pagesCount: Math.ceil(meta.totalCount / meta.pagesSize),
+    pageSize: meta.pageSize,
     totalCount: meta.totalCount,
     items: blogs.map(mapToBlogViewModel),
   };
