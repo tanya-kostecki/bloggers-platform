@@ -22,7 +22,7 @@ export class PostsRepository {
 
     const items = await postsCollection
       .find(filter)
-      .sort({ [sortBy]: sortDirection })
+      .sort({ [sortBy]: sortDirection === 'asc' ? 1 : -1 })
       .skip(skip)
       .limit(pageSize)
       .toArray();
@@ -52,13 +52,13 @@ export class PostsRepository {
     }
 
     const items = await postsCollection
-      .find({ blogId: blogId, filter })
-      .sort({ [sortBy]: sortDirection })
+      .find({ ...filter, blogId: blogId })
+      .sort({ [sortBy]: sortDirection === 'asc' ? 1 : -1 })
       .skip(skip)
       .limit(pageSize)
       .toArray();
 
-    const totalCount = await postsCollection.countDocuments(filter);
+    const totalCount = await postsCollection.countDocuments({ ...filter, blogId: blogId });
 
     return { items, totalCount };
   }
@@ -76,7 +76,6 @@ export class PostsRepository {
           title: dto.title,
           shortDescription: dto.shortDescription,
           content: dto.content,
-          id,
         },
       },
     );

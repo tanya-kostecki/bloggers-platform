@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { HttpStatus } from '../../../core/types/http-statuses';
 import { postsService } from '../../application/posts.service';
-import { mapPostToViewModel } from '../mappers/mapt-to-post-view-model';
+import { mapPostToViewModel } from '../mappers/map-to-post-view-model';
 import { errorsHandler } from '../../../core/errors/errors.handler';
 
 export const getOnePostHandler = async (

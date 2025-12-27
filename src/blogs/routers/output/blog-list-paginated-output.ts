@@ -1,9 +1,9 @@
-import { Blog } from '../../types/blog';
+import { BlogViewModel } from '../../types/blog-view-model';
 
 export type BlogListPaginatedOutput = {
   page: number;
   pagesSize: number;
   pagesCount: number;
   totalCount: number;
-  items: Blog[];
+  items: BlogViewModel[];
 };

@@ -22,7 +22,7 @@ export const getBlogPostsHandler = async (
 
     const blogPaginatedOutput = mapToPostsToPaginatedOutput(items, {
       pageNumber: query.pageNumber,
-      pageSize: query.pageSize,
+      pagesSize: query.pageSize,
       totalCount,
     });
     res.status(HttpStatus.Ok).send(blogPaginatedOutput);

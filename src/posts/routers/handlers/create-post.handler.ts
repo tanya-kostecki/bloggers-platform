@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { PostDto } from '../../application/dto/post.dto';
 import { HttpStatus } from '../../../core/types/http-statuses';
-import { mapPostToViewModel } from '../mappers/mapt-to-post-view-model';
+import { mapPostToViewModel } from '../mappers/map-to-post-view-model';
 import { postsService } from '../../application/posts.service';
 import { errorsHandler } from '../../../core/errors/errors.handler';
 

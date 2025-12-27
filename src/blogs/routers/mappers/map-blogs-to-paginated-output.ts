@@ -1,23 +1,17 @@
 import { WithId } from 'mongodb';
 import { Blog } from '../../types/blog';
 import { BlogListPaginatedOutput } from '../output/blog-list-paginated-output';
+import { mapToBlogViewModel } from './map-to-blog-view-model';
 
 export const mapToBlogsToPaginatedOutput = (
   blogs: WithId<Blog>[],
-  meta: { pageNumber: number; pageSize: number; totalCount: number },
+  meta: { pageNumber: number; pagesSize: number; totalCount: number },
 ): BlogListPaginatedOutput => {
   return {
     page: meta.pageNumber,
-    pagesSize: meta.pageSize,
-    pagesCount: Math.ceil(meta.totalCount / meta.pageSize),
+    pagesSize: meta.pagesSize,
+    pagesCount: Math.ceil(meta.totalCount / meta.pagesSize),
     totalCount: meta.totalCount,
-    items: blogs.map((blog) => ({
-      id: blog._id.toString(),
-      name: blog.name,
-      description: blog.description,
-      websiteUrl: blog.websiteUrl,
-      createdAt: blog.createdAt,
-      isMembership: blog.isMembership,
-    })),
+    items: blogs.map(mapToBlogViewModel),
   };
 };

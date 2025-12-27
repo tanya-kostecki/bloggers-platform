@@ -3,7 +3,7 @@ import { HttpStatus } from '../../../core/types/http-statuses';
 import { errorsHandler } from '../../../core/errors/errors.handler';
 import { postsService } from '../../../posts/application/posts.service';
 import { CreatePostDto } from '../../../posts/application/dto/create-post.dto';
-import { mapPostToViewModel } from '../../../posts/routers/mappers/mapt-to-post-view-model';
+import { mapPostToViewModel } from '../../../posts/routers/mappers/map-to-post-view-model';
 
 export const createBlogPostHandler = async (
   req: Request<{ blogId: string }, {}, CreatePostDto>,
