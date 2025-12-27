@@ -1,5 +1,4 @@
 import { body } from 'express-validator';
-import { blogsRepository } from '../../blogs/repositories/blogs.repository';
 
 const titleValidation = body('title')
   .isString()
@@ -35,14 +34,7 @@ const blogIdValidation = body('blogId')
   .notEmpty()
   .withMessage('blogId is required')
   .isMongoId()
-  .withMessage('blogId must be a valid MongoDb ObjectId')
-  .custom(async (value) => {
-    const blog = await blogsRepository.findOne(value);
-    if (!blog) {
-      throw new Error('Blog with this id does not exists');
-    }
-    return true;
-  });
+  .withMessage('blogId must be a valid MongoDb ObjectId');
 
 export const postInputValidationMiddleware = [
   titleValidation,

@@ -58,7 +58,7 @@ describe('Posts API Validation', () => {
 
     expect(responseTwo.status).toBe(HttpStatus.BadRequest);
     expect(responseTwo.body).toHaveProperty('errorsMessages');
-    expect(responseTwo.body.errorsMessages).toHaveLength(4);
+    expect(responseTwo.body.errorsMessages).toHaveLength(3);
   });
 
   it('❌ should not update a post without auth token', async () => {

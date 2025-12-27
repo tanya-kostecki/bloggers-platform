@@ -49,8 +49,12 @@ describe('Blogs API', () => {
     const response = await request(app).get(BLOGS_PATH);
 
     expect(response.status).toBe(HttpStatus.Ok);
-    expect(response.body).toBeInstanceOf(Array);
-    expect(response.body.length).toBeGreaterThanOrEqual(2);
+    expect(response.body).toHaveProperty('items');
+    expect(response.body.items).toBeInstanceOf(Array);
+    expect(response.body.items.length).toBeGreaterThanOrEqual(2);
+    expect(response.body).toHaveProperty('page');
+    expect(response.body).toHaveProperty('pageSize');
+    expect(response.body).toHaveProperty('totalCount');
   });
 
   it('should return a blog by id', async () => {

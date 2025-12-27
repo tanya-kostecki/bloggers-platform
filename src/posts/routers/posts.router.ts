@@ -8,11 +8,18 @@ import { updatePostHandler } from './handlers/update-post.handler';
 import { postInputValidationMiddleware } from '../validation/post-input.validation-middleware';
 import { deletePostHandler } from './handlers/delete-post.handler';
 import { createPostHandler } from './handlers/create-post.handler';
+import { paginationAndSortingValidation } from '../../core/validation/query-pagination-sorting-validation.middleware';
+import { PostSortFieldEnum } from './input/post-sort-field';
 
 export const postsRouter = Router({});
 
 postsRouter
-  .get('/', getAllPostsHandler)
+  .get(
+    '/',
+    ...paginationAndSortingValidation(PostSortFieldEnum),
+    inputResultValidationMiddleware,
+    getAllPostsHandler,
+  )
   .get(
     '/:id',
     paramIdValidationMiddleware,

@@ -30,13 +30,16 @@ export class PostsService {
   async findOneOrFail(id: string): Promise<WithId<Post>> {
     const post = await this.postsRepository.findOne(id);
     if (!post) {
-      throw new NotFoundError('Blog not found');
+      throw new NotFoundError('Post not found');
     }
     return post;
   }
 
-  async findByBlogId(blogId: string): Promise<WithId<Post>[]> {
-    return this.postsRepository.findByBlogId(blogId);
+  async findByBlogId(
+    blogId: string,
+    query: PostsQueryInput,
+  ): Promise<{ items: WithId<Post>[]; totalCount: number }> {
+    return this.postsRepository.findByBlogId(blogId, query);
   }
 
   async create(dto: PostDto): Promise<string> {

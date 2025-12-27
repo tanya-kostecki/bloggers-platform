@@ -13,8 +13,8 @@ export class PostsRepository {
     const skip = (pageNumber - 1) * pageSize;
     const filter: Filter<Post> = {};
 
-    filter.$or = [];
     if (searchPostTitleTerm) {
+      filter.$or = [];
       filter.$or.push({
         title: { $regex: searchPostTitleTerm, $options: 'i' },
       });
@@ -35,8 +35,32 @@ export class PostsRepository {
     return postsCollection.findOne({ _id: new ObjectId(id) });
   }
 
-  async findByBlogId(blogId: string): Promise<WithId<Post>[]> {
-    return postsCollection.find({ blogId }).toArray();
+  async findByBlogId(
+    blogId: string,
+    query: PostsQueryInput,
+  ): Promise<{ items: WithId<Post>[]; totalCount: number }> {
+    const { pageNumber, pageSize, sortBy, sortDirection, searchPostTitleTerm } =
+      query;
+    const skip = (pageNumber - 1) * pageSize;
+    const filter: Filter<Post> = {};
+
+    if (searchPostTitleTerm) {
+      filter.$or = [];
+      filter.$or.push({
+        title: { $regex: searchPostTitleTerm, $options: 'i' },
+      });
+    }
+
+    const items = await postsCollection
+      .find({ blogId: blogId, filter })
+      .sort({ [sortBy]: sortDirection })
+      .skip(skip)
+      .limit(pageSize)
+      .toArray();
+
+    const totalCount = await postsCollection.countDocuments(filter);
+
+    return { items, totalCount };
   }
 
   async create(post: Post): Promise<string> {
