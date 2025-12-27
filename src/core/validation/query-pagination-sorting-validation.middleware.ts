@@ -8,7 +8,6 @@ const DEFAULT_SORT_DIRECTION = SortDirection.Desc;
 export function paginationAndSortingValidation<T extends string>(
   sortFieldsEnum: Record<string, T>,
 ) {
-  //Record<string, T> - тип объекта, где ключи типа string, значения типа Т
   return [
     query('pageNumber')
       .default(DEFAULT_PAGE)
