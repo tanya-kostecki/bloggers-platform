@@ -19,7 +19,7 @@ export class PostsRepository {
 
     const items = await postsCollection
       .find(filter)
-      .sort({ [sortBy]: sortDirection === 'asc' ? 1 : -1 })
+      .sort({ [sortBy]: sortDirection })
       .skip(skip)
       .limit(pageSize)
       .toArray();
@@ -52,7 +52,10 @@ export class PostsRepository {
       .limit(pageSize)
       .toArray();
 
-    const totalCount = await postsCollection.countDocuments({ ...filter, blogId: blogId });
+    const totalCount = await postsCollection.countDocuments({
+      ...filter,
+      blogId: blogId,
+    });
 
     return { items, totalCount };
   }

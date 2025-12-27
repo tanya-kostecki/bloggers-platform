@@ -8,13 +8,8 @@ export class BlogsRepository {
   async findAll(
     query: BlogsQueryInput,
   ): Promise<{ items: WithId<Blog>[]; totalCount: number }> {
-    const {
-      pageNumber,
-      pageSize,
-      sortBy,
-      sortDirection,
-      searchNameTerm,
-    } = query;
+    const { pageNumber, pageSize, sortBy, sortDirection, searchNameTerm } =
+      query;
     const skip = (pageNumber - 1) * pageSize;
     const filter: Filter<Blog> = {};
 
@@ -24,7 +19,7 @@ export class BlogsRepository {
 
     const items = await blogsCollection
       .find(filter)
-      .sort({ [sortBy]: sortDirection === 'asc' ? 1 : -1 })
+      .sort({ [sortBy]: sortDirection })
       .skip(skip)
       .limit(pageSize)
       .toArray();
