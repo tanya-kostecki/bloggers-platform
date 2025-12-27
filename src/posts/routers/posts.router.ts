@@ -10,7 +10,6 @@ import { deletePostHandler } from './handlers/delete-post.handler';
 import { createPostHandler } from './handlers/create-post.handler';
 import { paginationAndSortingValidation } from '../../core/validation/query-pagination-sorting-validation.middleware';
 import { PostSortFieldEnum } from './input/post-sort-field';
-import { query } from 'express-validator';
 
 export const postsRouter = Router({});
 
@@ -18,7 +17,6 @@ postsRouter
   .get(
     '/',
     ...paginationAndSortingValidation(PostSortFieldEnum),
-    query('searchTitleTerm').optional().isString().trim(),
     inputResultValidationMiddleware,
     getAllPostsHandler,
   )
