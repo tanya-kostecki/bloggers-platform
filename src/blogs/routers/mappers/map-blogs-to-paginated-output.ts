@@ -8,8 +8,8 @@ export const mapToBlogsToPaginatedOutput = (
 ): BlogListPaginatedOutput => {
   return {
     page: meta.pageNumber,
-    pageSize: meta.pageSize,
-    pageCount: Math.ceil(meta.totalCount / meta.pageSize),
+    pagesSize: meta.pageSize,
+    pagesCount: Math.ceil(meta.totalCount / meta.pageSize),
     totalCount: meta.totalCount,
     items: blogs.map((blog) => ({
       id: blog._id.toString(),

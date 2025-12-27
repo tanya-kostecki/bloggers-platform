@@ -45,7 +45,8 @@ describe('Posts API', () => {
     expect(response.body.items).toBeInstanceOf(Array);
     expect(response.body.items.length).toBeGreaterThanOrEqual(2);
     expect(response.body).toHaveProperty('page');
-    expect(response.body).toHaveProperty('pageSize');
+    expect(response.body).toHaveProperty('pagesSize');
+    expect(response.body).toHaveProperty('pagesCount');
     expect(response.body).toHaveProperty('totalCount');
   });
 

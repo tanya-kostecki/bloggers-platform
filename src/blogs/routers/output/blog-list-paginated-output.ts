@@ -2,8 +2,8 @@ import { Blog } from '../../types/blog';
 
 export type BlogListPaginatedOutput = {
   page: number;
-  pageSize: number;
-  pageCount: number;
+  pagesSize: number;
+  pagesCount: number;
   totalCount: number;
   items: Blog[];
 };

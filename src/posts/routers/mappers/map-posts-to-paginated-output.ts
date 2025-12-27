@@ -8,8 +8,8 @@ export const mapToPostsToPaginatedOutput = (
 ): PostListPaginatedOutput => {
   return {
     page: meta.pageNumber,
-    pageSize: meta.pageSize,
-    pageCount: Math.ceil(meta.totalCount / meta.pageSize),
+    pagesSize: meta.pageSize,
+    pagesCount: Math.ceil(meta.totalCount / meta.pageSize),
     totalCount: meta.totalCount,
     items: posts.map((post) => ({
       id: post._id.toString(),
