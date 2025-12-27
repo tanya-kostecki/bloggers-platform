@@ -3,6 +3,5 @@ import { PaginationAndSorting } from '../../../core/types/pagination-and-sorting
 
 export type BlogsQueryInput = PaginationAndSorting<BlogSortFieldEnum> &
   Partial<{
-    searchBlogNameTerm: string;
-    searchWebsiteUrlTerm: string;
+    searchNameTerm: string;
   }>;

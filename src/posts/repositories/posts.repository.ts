@@ -8,16 +8,13 @@ export class PostsRepository {
   async findAll(
     query: PostsQueryInput,
   ): Promise<{ items: WithId<Post>[]; totalCount: number }> {
-    const { pageNumber, pageSize, searchPostTitleTerm, sortBy, sortDirection } =
+    const { pageNumber, pageSize, searchTitleTerm, sortBy, sortDirection } =
       query;
     const skip = (pageNumber - 1) * pageSize;
     const filter: Filter<Post> = {};
 
-    if (searchPostTitleTerm) {
-      filter.$or = [];
-      filter.$or.push({
-        title: { $regex: searchPostTitleTerm, $options: 'i' },
-      });
+    if (searchTitleTerm) {
+      filter.title = { $regex: searchTitleTerm, $options: 'i' };
     }
 
     const items = await postsCollection
@@ -39,16 +36,13 @@ export class PostsRepository {
     blogId: string,
     query: PostsQueryInput,
   ): Promise<{ items: WithId<Post>[]; totalCount: number }> {
-    const { pageNumber, pageSize, sortBy, sortDirection, searchPostTitleTerm } =
+    const { pageNumber, pageSize, sortBy, sortDirection, searchTitleTerm } =
       query;
     const skip = (pageNumber - 1) * pageSize;
     const filter: Filter<Post> = {};
 
-    if (searchPostTitleTerm) {
-      filter.$or = [];
-      filter.$or.push({
-        title: { $regex: searchPostTitleTerm, $options: 'i' },
-      });
+    if (searchTitleTerm) {
+      filter.title = { $regex: searchTitleTerm, $options: 'i' };
     }
 
     const items = await postsCollection

@@ -13,24 +13,13 @@ export class BlogsRepository {
       pageSize,
       sortBy,
       sortDirection,
-      searchBlogNameTerm,
-      searchWebsiteUrlTerm,
+      searchNameTerm,
     } = query;
     const skip = (pageNumber - 1) * pageSize;
     const filter: Filter<Blog> = {};
 
-    if (searchBlogNameTerm || searchWebsiteUrlTerm) {
-      filter.$or = [];
-      if (searchBlogNameTerm) {
-        filter.$or.push({
-          name: { $regex: searchBlogNameTerm, $options: 'i' },
-        });
-      }
-      if (searchWebsiteUrlTerm) {
-        filter.$or.push({
-          websiteUrl: { $regex: searchWebsiteUrlTerm, $options: 'i' },
-        });
-      }
+    if (searchNameTerm) {
+      filter.name = { $regex: searchNameTerm, $options: 'i' };
     }
 
     const items = await blogsCollection

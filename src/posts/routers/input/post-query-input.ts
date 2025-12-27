@@ -3,5 +3,5 @@ import { PostSortFieldEnum } from './post-sort-field';
 
 export type PostsQueryInput = PaginationAndSorting<PostSortFieldEnum> &
   Partial<{
-    searchPostTitleTerm: string;
+    searchTitleTerm: string;
   }>;
