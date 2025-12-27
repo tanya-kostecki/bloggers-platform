@@ -43,9 +43,5 @@ export function paginationAndSortingValidation<T extends string>(
       .withMessage(
         `Sort direction must be one of: ${Object.values(SortDirection).join(', ')}`,
       ),
-
-    // Search parameters - all optional
-    query('searchNameTerm').optional().isString().trim(),
-    query('searchTitleTerm').optional().isString().trim(),
   ];
 }

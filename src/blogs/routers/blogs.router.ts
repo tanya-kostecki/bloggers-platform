@@ -17,13 +17,15 @@ import { paginationAndSortingValidation } from '../../core/validation/query-pagi
 import { BlogSortFieldEnum } from './input/blogs-sort-field';
 import { blogPostInputValidationMiddleware } from '../../posts/validation/post-input.validation-middleware';
 import { PostSortFieldEnum } from '../../posts/routers/input/post-sort-field';
+import { query } from 'express-validator';
 
 export const blogsRouter = Router({});
 
 blogsRouter
   .get(
     '/',
-    ...paginationAndSortingValidation(BlogSortFieldEnum),
+    paginationAndSortingValidation(BlogSortFieldEnum),
+    query('searchNameTerm').optional().isString().trim(),
     inputResultValidationMiddleware,
     getAllBlogsHandler,
   )
@@ -36,7 +38,7 @@ blogsRouter
   .get(
     '/:blogId/posts',
     paramBlogIdValidationMiddleware,
-    ...paginationAndSortingValidation(PostSortFieldEnum),
+    paginationAndSortingValidation(PostSortFieldEnum),
     inputResultValidationMiddleware,
     getBlogPostsHandler,
   )

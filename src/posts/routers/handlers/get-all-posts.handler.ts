@@ -16,8 +16,8 @@ export const getAllPostsHandler = async (req: Request, res: Response) => {
     const queryInput = setDefaultSortAndPaginationIfNotExist(query);
     const { items, totalCount } = await postsService.findAll(queryInput);
     const postPaginatedOutput = mapToPostsToPaginatedOutput(items, {
-      pageNumber: query.pageNumber,
-      pageSize: query.pageSize,
+      pageNumber: queryInput.pageNumber,
+      pageSize: queryInput.pageSize,
       totalCount,
     });
     res.status(HttpStatus.Ok).send(postPaginatedOutput);

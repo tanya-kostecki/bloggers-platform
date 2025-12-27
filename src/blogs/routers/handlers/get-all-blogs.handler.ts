@@ -18,8 +18,8 @@ export const getAllBlogsHandler = async (req: Request, res: Response) => {
     const { items, totalCount } = await blogsService.findAll(queryInput);
 
     const blogPaginatedOutput = mapToBlogsToPaginatedOutput(items, {
-      pageNumber: query.pageNumber,
-      pageSize: query.pageSize,
+      pageNumber: queryInput.pageNumber,
+      pageSize: queryInput.pageSize,
       totalCount,
     });
     res.status(HttpStatus.Ok).send(blogPaginatedOutput);
