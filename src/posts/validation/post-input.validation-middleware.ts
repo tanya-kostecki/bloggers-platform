@@ -42,3 +42,9 @@ export const postInputValidationMiddleware = [
   contentValidation,
   blogIdValidation,
 ];
+
+export const blogPostInputValidationMiddleware = [
+  titleValidation,
+  shortDescriptionValidation,
+  contentValidation,
+];

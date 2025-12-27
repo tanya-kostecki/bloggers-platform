@@ -1,9 +1,9 @@
 import { PostViewModel } from '../../types/post-view-model';
 
 export type PostListPaginatedOutput = {
-  page: number;
-  pagesSize: number;
   pagesCount: number;
+  page: number;
+  pageSize: number;
   totalCount: number;
   items: PostViewModel[];
 };
