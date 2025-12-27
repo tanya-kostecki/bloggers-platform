@@ -1,12 +1,48 @@
 import { Blog } from '../types/blog';
 import { BlogDto } from '../application/dto/blog.dto';
-import { ObjectId, WithId } from 'mongodb';
+import { Filter, ObjectId, WithId } from 'mongodb';
 import { blogsCollection } from '../../db/mongo.db';
-import { NotFoundError } from '../../core/errors/not-found.error';
+import { BlogsQueryInput } from '../routers/input/blogs-query-input';
 
 export class BlogsRepository {
-  async findAll(): Promise<WithId<Blog>[]> {
-    return blogsCollection.find().toArray();
+  async findAll(
+    query: BlogsQueryInput,
+  ): Promise<{ items: WithId<Blog>[]; totalCount: number }> {
+    const {
+      pageNumber,
+      pageSize,
+      sortBy,
+      sortDirection,
+      searchBlogNameTerm,
+      searchWebsiteUrlTerm,
+    } = query;
+    const skip = (pageNumber - 1) * pageSize;
+    const filter: Filter<Blog> = {};
+
+    if (searchBlogNameTerm || searchWebsiteUrlTerm) {
+      filter.$or = [];
+      if (searchBlogNameTerm) {
+        filter.$or.push({
+          name: { $regex: searchBlogNameTerm, $options: 'i' },
+        });
+      }
+      if (searchWebsiteUrlTerm) {
+        filter.$or.push({
+          websiteUrl: { $regex: searchWebsiteUrlTerm, $options: 'i' },
+        });
+      }
+    }
+
+    const items = await blogsCollection
+      .find(filter)
+      .sort({ [sortBy]: sortDirection })
+      .skip(skip)
+      .limit(pageSize)
+      .toArray();
+
+    const totalCount = await blogsCollection.countDocuments(filter);
+
+    return { items, totalCount };
   }
 
   async findOne(id: string): Promise<WithId<Blog> | null> {

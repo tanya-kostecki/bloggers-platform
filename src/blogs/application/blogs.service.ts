@@ -3,12 +3,15 @@ import { Blog } from '../types/blog';
 import { BlogDto } from './dto/blog.dto';
 import { BlogsRepository } from '../repositories/blogs.repository';
 import { NotFoundError } from '../../core/errors/not-found.error';
+import { BlogsQueryInput } from '../routers/input/blogs-query-input';
 
 export class BlogsService {
   constructor(private readonly blogsRepository: BlogsRepository) {}
 
-  async findAll(): Promise<WithId<Blog>[]> {
-    return this.blogsRepository.findAll();
+  async findAll(
+    query: BlogsQueryInput,
+  ): Promise<{ items: WithId<Blog>[]; totalCount: number }> {
+    return this.blogsRepository.findAll(query);
   }
 
   async findOne(id: string): Promise<WithId<Blog> | null> {
