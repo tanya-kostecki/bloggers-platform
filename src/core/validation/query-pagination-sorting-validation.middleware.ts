@@ -22,7 +22,7 @@ export function paginationAndSortingValidation<T extends string>(
       .toInt(),
 
     query('sortBy')
-      .default(Object.values(sortFieldsEnum)[0]) // Дефолтное значение - первое поле
+      .default(Object.values(sortFieldsEnum)[0])
       .isIn(Object.values(sortFieldsEnum))
       .withMessage(
         `Allowed sort fields: ${Object.values(sortFieldsEnum).join(', ')}`,
@@ -34,5 +34,17 @@ export function paginationAndSortingValidation<T extends string>(
       .withMessage(
         `Sort direction must be one of: ${Object.values(SortDirection).join(', ')}`,
       ),
+
+    query('searchNameTerm')
+      .optional()
+      .isString()
+      .withMessage('Search name term must be a string')
+      .trim(),
+
+    query('searchTitleTerm')
+      .optional()
+      .isString()
+      .withMessage('Search title term must be a string')
+      .trim(),
   ];
 }
